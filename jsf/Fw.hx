@@ -137,14 +137,14 @@ predecessor/successor is 100*public function ellipseBCPConst pixels
 away from the point itself.*/ 
 var errorReportingOK:Bool; /* If set to true, Fireworks
 will allow posting an error while a script is running.*/ 
-var files:object; /* The FilesClass object used to perform file
+var files:Dynamic; /* The FilesClass object used to perform file
 operations (open, close, delete, and so on).*/ 
 var getDynamicSWFURL:String; /* Returns the location of the SWF file.*/ 
-var getEndBackgroundColor:color; /* Returns the end color for the background
+var getEndBackgroundColor:HexColor; /* Returns the end color for the background
 gradient. This function is only useful for the Windows platform.*/ 
-var getStartBackgroundColor:color; /* Returns the start color for the background
+var getStartBackgroundColor:HexColor; /* Returns the start color for the background
 gradient. This function is only useful for the Windows platform.*/ 
-var historyPalette:object; /* History panel object. There are no DOM properties
+var historyPalette:Dynamic; /* History panel object. There are no DOM properties
 for the History panel, only API calls. For more information, see History panel functions.*/ 
 var isConnectedToInternet:Int; /* Returns whether the operating system is
 connected to the Internet. The Start Page has a dynamic content
@@ -163,12 +163,12 @@ property to change the number.*/
 var progressCountTotal:Int; /* The second number (y) that appears in the
 Batch Progress dialog box, in the “File x of y” field. Set this
 property to change the number.*/ 
-var screenRect:rectangle; /* The size of the main screen on this computer,
+var screenRect:jsf.Rectangle; /* The size of the main screen on this computer,
 in pixels. Useful for positioning windows or panels.*/ 
 var selection:Array; /* Array of the selected objects in the active
 document. If nothing is selected, it returns an Array of length
 zero. If no document is open, it returns null. */ 
-var selectedMask:object; /* If a single item is selected and that item
+var selectedMask:Dynamic; /* If a single item is selected and that item
 is a mask, this property returns an ElementMask object (for more
 information, see ElementMask object); otherwise, it returns null.*/ 
 var styles:Array; /* Array of the Style object that is currently
@@ -207,7 +207,7 @@ or HTML (false).*/
 public function browseDocument(URL:String):Void;
 
 //browseType Acceptable values are "open", "select", and "save". The first two values display an Open dialog box; each is acceptable for compatibility with Adobe Dreamweaver. The third value displays a Save dialog box.title and previewArea Ignored by Fireworks but are accepted for compatibility with Dreamweaver.
-public function browseForFileURL(browseType:String, title:String, ?previewArea:Dynamic):String //The file URL selected by the user, or null if the dialog box was canceled.
+public function browseForFileURL(browseType:String, title:String, ?previewArea:Dynamic):String; //The file URL selected by the user, or null if the dialog box was canceled.
 
 //Displays a dialog box that lets a user select a particular directory.
 // Arguments
@@ -527,7 +527,7 @@ public function getBlue():HexColor;
 
 // Description
 // Gets the Document object for the active document (see The Document object).
-public function getDocumentDOM(?which-string:String="document"):Null<Document>;
+public function getDocumentDOM(?whichString:String="document"):Null<Document>;
 
 /*
 
@@ -663,7 +663,7 @@ If any of the files can be opened, returns the Document object for each file. Re
 
 Description
 Opens the specified files in new document windows. If a file is already open, it opens again; to avoid redundant open operations, call findOpenDocument() first.*/
-public function openDocument(?fileURL:String,?bOpenAsNew:Bool=false, ?bOpenWithWindowHidden:Bool=false):Dynamic //not clear returning value
+public function openDocument(?fileURL:String,?bOpenAsNew:Bool=false, ?bOpenWithWindowHidden:Bool=false):Dynamic; //not clear returning value
 
 
 
@@ -761,7 +761,7 @@ The file URL for the saved document, or null if the dialog box was canceled.
 
 Description
 Displays the Save As dialog box for the specified document, so that it can be saved as a native Fireworks PNG file with the specified name. To save a document to another format, such as GIF or JPEG, use fw.exportDocumentAs().*/
-public function saveDocumentAs(document:jsf.Document)Null<String>;
+public function saveDocumentAs(document:jsf.Document):Null<String>;
 
 
 /*Usage
@@ -785,7 +785,7 @@ Saves a copy of the specified document as a native Fireworks PNG file with the s
 public function saveDocumentCopyAs(doc:jsf.Document,fileUrl:String):Null<String>;
 
 //Saves the specified string of JavaScript code as a JSF command file. Fireworks writes the file using UTF-8 encoding and prepends the UTF-8 byte order mark to the file that is written.
-public function saveJsCommand(jscode:String,filename:String)Void;
+public function saveJsCommand(jscode:String,filename:String):Void;
 
 
 /*Arguments

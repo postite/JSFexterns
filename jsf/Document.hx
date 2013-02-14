@@ -8,6 +8,7 @@
  Read-only properties are marked with a bullet (•). 
  You can also use many API calls to work with documents. For more information, 
  see Property inspector functions.*/
+ ///
  
 package jsf;
 @:native("")
