@@ -1,0 +1,7 @@
+var Test = function() {
+	fw.getDocumentDOM().addNewOval({ left : 72, top : 79, right : 236, bottom : 228});
+};
+Test.main = function() {
+	new Test();
+}
+Test.main();

@@ -1,0 +1,5 @@
+
+-main Test
+-cp JSFexterns
+--dead-code-elimination
+-js test.jsf
