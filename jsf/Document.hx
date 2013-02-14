@@ -13,15 +13,19 @@
 package jsf;
 
 import Fw.Point;
-typedef Guides=Dynamic
-typedef PathAttrs=Dynamic
-typedef PngText=Dynamic
-typedef Brush=Dynamic
-typedef Gradient=Dynamic
-typedef Fill=Dynamic
-typedef Frame=Dynamic
-typedef Layer=Dynamic
-typedef Texture=Dynamic
+import jsf.Brush;
+import jsf.Guides;
+import jsf.Gradient;
+import jsf.Fill;
+import jsf.Frame;
+
+
+import  jsf.PathAttrs;
+import  jsf.PngText;
+import  jsf.Layer;
+typedef Texture={
+	name:String //The name that appears in the Brush or Fill panels.
+}
 
 @:native("")
 extern class Document{
