@@ -19,6 +19,8 @@ Refer to the Fireworks object by using public function propertyName or fireworks
 // )
 
 */
+
+//too much comments
 package jsf;
 
 import jsf.Document;
