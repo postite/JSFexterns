@@ -39,14 +39,15 @@ typedef Point={
 	y:Float
 	
 }
+typedef Style=Dynamic
 
 typedef Dialogs={
 	//Opens the Edit Grids dialog box.
-	public function runEditGrids();
+	public function runEditGrids():Dynamic;
 	//Opens the Edit Guides dialog box.
-	public function runEditGuides();
+	public function runEditGuides():Dynamic;
 	//Opens the Numeric Transform dialog box.
-	public function runNumericTransform();
+	public function runNumericTransform():Dynamic;
 }
 
 @:native("fw") //todo
@@ -120,14 +121,14 @@ var currentScriptFileName:String; /* The filename of the currently running scrip
 filename, not the full path.*/ 
 var dialogs:Dialogs; /* Provides access to an instance of the Dialogs
 class, which opens specific dialog boxes.*/ 
-var dismissBatchDialogWhenDone:Bool; /* If set to true, Fireworks
+var _dismissBatchDialogWhenDone:Bool; /* If set to true, Fireworks
 will automatically close the Batch Process dialog box when the script
 finishes. This function has no effect if the Batch Process dialog
 box does not appear.*/ 
-var documentList:Array; /* Array of the current open Document objects
+var documentList:Array<Document>; /* Array of the current open Document objects
 (for more information, see The Document object). If no document is open, it returns an Array
 of length zero.*/ 
-var documents:Array; /* Array of the current open Document objects
+var documents:Array<Document>; /* Array of the current open Document objects
 (for more information, see The Document object). If no document is open, returns an Array
 of length zero.*/ 
 var ellipseBCPConst:Float; /* A fixed value of 0.55229187012 used to calculate
@@ -150,9 +151,9 @@ var isConnectedToInternet:Int; /* Returns whether the operating system is
 connected to the Internet. The Start Page has a dynamic content
 panel that loads content from the Internet. The Start Page queries
 this property before attempting to download the dynamic content.*/ 
-var mruRecentFilesList:Array; /* Array of recent open files. If there are
+var mruRecentFilesList:Array<String>; /* Array of recent open files. If there are
 no open files, returns an Array length of zero.*/ 
-var mruRecentFileNames:Array; /* Array of recent open file names. If there
+var mruRecentFileNames:Array<String>; /* Array of recent open file names. If there
 are no open files, returns an Array length of zero.*/ 
 var platform :String; /* The String "mac" if Fireworks
 is running on the Macintosh, or "win" if running
@@ -165,13 +166,13 @@ Batch Progress dialog box, in the “File x of y” field. Set this
 property to change the number.*/ 
 var screenRect:jsf.Rectangle; /* The size of the main screen on this computer,
 in pixels. Useful for positioning windows or panels.*/ 
-var selection:Array; /* Array of the selected objects in the active
+var selection:Array<Dynamic>; /* Array of the selected objects in the active
 document. If nothing is selected, it returns an Array of length
 zero. If no document is open, it returns null. */ 
 var selectedMask:Dynamic; /* If a single item is selected and that item
 is a mask, this property returns an ElementMask object (for more
 information, see ElementMask object); otherwise, it returns null.*/ 
-var styles:Array; /* Array of the Style object that is currently
+var styles:Array<Style>; /* Array of the Style object that is currently
 loaded in the Style panel (for more information, see Style object).*/ 
 var textInsertionIndex:Int; /* Insertion index into the current active
 text object. If there is no text selected, returns a value of -1.*/ 
@@ -221,7 +222,7 @@ public function browseHelp(helpID:Int):Void;//Opens the specified help topic in 
 // version An integer that is reserved for future use; only a value of 0 is supported at this time. To use this function, put a call to fw.checkFwJsVersion(0) in your script.
 public function checkFwJsVersion(?version:Int=0):Void;//Checks the JavaScript API for incompatibilities.
 
-// primaryBrowser A Boolean value that indicates which browser to select. If primaryBrowser is true, Fireworks prompts the user to set the primary browser; if the argument is false, Fireworks prompts the user to set the secondary browser.
+// primaryBrowser A Bool value that indicates which browser to select. If primaryBrowser is true, Fireworks prompts the user to set the primary browser; if the argument is false, Fireworks prompts the user to set the secondary browser.
 public function chooseBrowser(primaryBrowser:Bool):Void;
 
 // Arguments
@@ -235,13 +236,13 @@ public function chooseScriptTargetDialog(formatlist:Dynamic):Array<String>;
 
 // Arguments
 // document A Document object that specifies the document to close (see The Document object).
-// bPromptToSaveChanges An optional Boolean argument. If bPromptToSaveChanges is true or omitted and the document has changed since the last time it was saved, the user is prompted to save changes to the document. If bPromptToSaveChanges is false, the user is not prompted, and any changes to the document are discarded.
+// bPromptToSaveChanges An optional Bool argument. If bPromptToSaveChanges is true or omitted and the document has changed since the last time it was saved, the user is prompted to save changes to the document. If bPromptToSaveChanges is false, the user is not prompted, and any changes to the document are discarded.
 // Returns
 // Nothing.
 
 // Description
 // Closes the specified document.
-public function closeDocument(document:Document,?bPromptToSaveChanges:Boolean):Void;
+public function closeDocument(document:Document,?bPromptToSaveChanges:Bool):Void;
 
 
 // Arguments
@@ -292,7 +293,7 @@ public function reloadCommonLibrary():Void;
 public function disableFlashDebugging():Void;
 
 // Arguments
-// autoClose A Boolean value. If set to true, the Batch Progress dialog box closes automatically (without user intervention) when the script finishes.
+// autoClose A Bool value. If set to true, the Batch Progress dialog box closes automatically (without user intervention) when the script finishes.
 // Returns
 // Nothing.
 
@@ -308,7 +309,7 @@ public function enableFlashDebugging():Void;
 // Arguments
 // document A Document object (for example, fw.documents[2]) that specifies the document to export. If document is null, the active document is exported.
 // Returns
-// A Boolean value: true if successful; false otherwise.
+// A Bool value: true if successful; false otherwise.
 
 // Description
 // Displays the export dialog box, which is preconfigured to export HTML and images and to copy the HTML code to the clipboard
@@ -321,7 +322,7 @@ public function exportAndCopyHTMLCode(document:Document):Bool;
 // imagesURL Path of the images folder.
 // trim True if the document trims; false otherwise.
 // Returns
-// A Boolean value: true if successful; false otherwise.
+// A Bool value: true if successful; false otherwise.
 
 // Description
 // Exports document as CSS layers and images. The image names are based on the names in the Layers panel.
@@ -331,7 +332,7 @@ public function exportCSSLayers(doc:Document, mode:Int, htmlURL:String, imagesUR
 // document A Document object—for example fw.documents[2]—that specifies the document to export. If document is null, the active document is exported.
 // fileURL Specifies the filename for the exported file. If fileURL is null, Fireworks displays the Export dialog box.
 // Returns
-// A Boolean value: true if successful; false otherwise.
+// A Bool value: true if successful; false otherwise.
 
 // Description
 // Exports the specified document to the specified file as layers to be imported into Adobe Director.
@@ -341,7 +342,7 @@ public function exportDirectorAsLayers(doc:Document,fileURL:String):Bool;
 // document A Document object, for example, fw.documents[2], that specifies the document to export. If document is null, the active document is exported.
 // fileURL Specifies the filename for the exported file. If fileURL is null, Fireworks displays the Export dialog box.
 // Returns
-// A Boolean value: true if successful; false otherwise.
+// A Bool value: true if successful; false otherwise.
 
 // Description
 // Exports the specified document to the specified file as Adobe Director images.
@@ -353,7 +354,7 @@ public function exportDirectorAsSlices(doc:Document,fileURL:String):Bool;
 // fileURL A string, which is expressed as a file://URL, that specifies the filename for the exported file. If fileURL is null, the Save As dialog box is displayed.
 // exportOptions An ExportOptions object (see ExportOptions object). If exportOptions is null, the document’s current export options are used. If the file format specified by exportOptions conflicts with the file format specified by fileURL, then the extension of fileURL is changed to match the format specified by exportOptions.
 // Returns
-// A Boolean value: true if successful; false otherwise.
+// A Bool value: true if successful; false otherwise.
 
 // Description
 // Exports the specified document to the specified file.
@@ -363,7 +364,7 @@ public function exportDocumentAs(document:Document, fileURL:String, exportOption
 // docObject A Document object that specifies the document that contains the frames to export (see The Document object). To export frames from the current document, pass null.
 // directoryURL The directory where the images will be placed, which is expressed as a file://URL.
 // Returns
-// A Boolean value: true if successful; false otherwise.
+// A Bool value: true if successful; false otherwise.
 
 // Description
 // Exports a document’s frames as individual images. The image names are based on the names in the Frames panel.
@@ -378,7 +379,7 @@ public function exportFrames(doc:Document,directoryURL:String):Bool;
 // pages “”all pages” or “current page” or “selected objects”.
 // fileUrl “Specifies the file location to which it has to be exported.
 // Returns
-// A Boolean value: true if successful; false otherwise.
+// A Bool value: true if successful; false otherwise.
 
 // Description
 // Exports current page, all pages of the open document in Fireworks, or selected objects from the current page as FXG files.
@@ -389,7 +390,7 @@ public function exportFXG(doc:Document,pages:String,fileUrl:String):Bool;
 // htmlUrl The filename of the exported HTML file, which is expressed as a file://URL. If htmlUrlis null, no HTML is generated.
 // imagesUrl The name of the file containing the exported image(s), which is expressed as a file://URL, and might not be null. If a single image is generated, this function uses imagesUrl as the name of the image file. If multiple sliced images are exported, it uses imagesURL to generate automatically named images, and all images are placed in this directory.
 // Returns
-// A Boolean value: true if successful; false otherwise.
+// A Bool value: true if successful; false otherwise.
 
 // Description
 // Exports one image if the document contains no slice objects and multiple images if the document contains one or more slice objects. It also optionally exports HTML. The document is exported using the current export settings and export options.
@@ -404,7 +405,7 @@ public function exportHtmlAndImages(doc:Document, htmlUrl:String, imagesUrl:Stri
 // document A Document object, for example, fw.documents[2], that specifies the document to export. If document is null, the active document is exported.
 // fileURL Specifies the filename for the exported file. If fileURL is null, Fireworks displays the Export dialog box.
 // Returns
-// A Boolean value: true if successful; false otherwise.
+// A Bool value: true if successful; false otherwise.
 
 // Description
 // Exports the specified document to the specified file in Adobe Illustrator format.
@@ -414,7 +415,7 @@ public function exportIllustrator(doc:Document,fileURL:String):Bool;
 // docObject A Document object that specifies the document that contains the layers to export (see The Document object). To export layers from the current document, pass null.
 // directoryURL The directory in which the images will be placed, which is expressed as a file://URL.
 // Returns
-// A Boolean value: true if successful; false otherwise.
+// A Bool value: true if successful; false otherwise.
 
 // Description
 // Exports a document’s layers as individual images. The image names are based on the names in the Layers panel. The layers from the current frame are exported.
@@ -430,7 +431,7 @@ public function exportLayers(docObject:Document, directoryURL:String):Bool;
 // htmlUrl The filename of the exported MXML file, which is expressed as a file://URL. If htmlUrlis null, no MXML is generated.
 // imagesUrl The name of the file containing the exported image(s), which is expressed as a file://URL, and might not be null. If a single image is generated, this function uses imagesUrl as the name of the image file. If multiple sliced images are exported, it uses imagesURL to generate automatically named images, and all images are placed in this directory.
 // Returns
-// A Boolean value: true if successful; false otherwise.
+// A Bool value: true if successful; false otherwise.
 
 // Description
 // Exports one image if the document contains no slice objects and multiple images if the document contains one or more slice objects. It also optionally exports MXML. The document is exported using the current export settings and export options.
@@ -461,7 +462,7 @@ public function exportPages(doc:Document,images:String,selection:String,fileURL:
 // doc Document object (for example, fw.documents[2]) that specifies the document to be exported. To export frames from the current document, pass null.
 // pdfURL Specifies the filename for the exported file. If pdfURL is null, Fireworks displays the Export dialog box.
 // Returns
-// A Boolean value: true if successful; false otherwise.
+// A Bool value: true if successful; false otherwise.
 
 // Description
 // Exports the specified document to the specified file in PDF format.
@@ -471,7 +472,7 @@ public function exportPDF(doc:Document,pdfURL:String):Bool;
 // docObject A Document object that specifies the document to export (see The Document object). To export the current document, pass null.
 // PSDDocumentURL The name of the Photoshop document to be created, which is expressed as a file://URL.
 // Returns
-// A Boolean value: true if successful; false otherwise.
+// A Bool value: true if successful; false otherwise.
 
 // Description
 // Exports a Fireworks document as a Photoshop document.
@@ -481,7 +482,7 @@ public function exportPSD(doc:Document, PSDDocumentURL:String):Bool;
 // docObject A Document object that specifies the document to be exported (see The Document object). To export the current document, pass null.
 // FlashDocumentURL The name of the Adobe Flash document to be created, which is expressed as a file://URL.
 // Returns
-// A Boolean value: true if successful; false otherwise.
+// A Bool value: true if successful; false otherwise.
 
 // Description
 // Exports a Fireworks document as a Adobe Flash document.
@@ -601,7 +602,7 @@ public function internalNameToUIName(internalName:String):String;
 appPath A file URL that specifies the executable to start. Typically, this value can be obtained by calling fw.findApp().
 filePathsToOpen An array of file URLs to open in the executable to start. It is safe to pass an empty array.
 Returns
-A Boolean value that indicates whether the application started successfully.
+A Bool value that indicates whether the application started successfully.
 
 Description
 Starts an application using a file URL that is returned by fw.findApp(). You can specify, optionally, files to open in the application.*/
@@ -619,7 +620,7 @@ Description
 Starts Fireworks’ primary web browser to open a URL.*/
 public function launchBrowserTo(url:String):Void;
 //@see http://help.adobe.com/en_US/fireworks/cs/extend/WSBC41EF47-62A8-4086-8F11-D752E680D6BC.html
-public function locateDocDialog(maxnumdocs:Int,formatlist:Array<String>);
+public function locateDocDialog(maxnumdocs:Int,formatlist:Array<String>):Array<String>;
 
 /*Arguments
 red Decimal value of red color.
@@ -657,7 +658,7 @@ public function newMobileDocument(arg1:String,arg2:Float,arg3:Float,arg4:Float):
 /*Arguments
 fileURl A string or an array of strings, each expressed as a file://URL, that specifies the files to be opened. This argument is optional. If fileURL is omitted or null, the Open Document dialog box appears.
 bOpenAsNew If bOpenAsNew, which was added in Fireworks 4, is true, the files are opened as unsaved and untitled documents. If bOpenAsNew is false (the default value), they are opened with their original names. This argument is optional.
-bOpenWithWindowHidden Boolean. If bOpenWithWindowHidden, which was added in Fireworks 8, is true, and if there is only one document to open, the document will be hidden when opened. If more than one document is being opened, this parameter is ignored. The default value is false. This parameter was added to enhance the Batch Process feature.
+bOpenWithWindowHidden Bool. If bOpenWithWindowHidden, which was added in Fireworks 8, is true, and if there is only one document to open, the document will be hidden when opened. If more than one document is being opened, this parameter is ignored. The default value is false. This parameter was added to enhance the Batch Process feature.
 Returns
 If any of the files can be opened, returns the Document object for each file. Returns null if none of the documents can be opened.
 
@@ -673,8 +674,8 @@ public function openMultiDocument():Void;
 /*Arguments
 screenLoc The location at which the dialog box appears, in the form of a point {x:float, y: float} (for syntax details, see Point data type).
 initialColor The initially selected color in the dialog box, in the form #rrggbbaa (for syntax details, see Color string data type).
-allowTransparent A Boolean value that lets the user select a transparent color; set to true for transparent, false otherwise.
-forceWeb216 A Boolean value that forces the specified color to fall within the web216 panel; set to true to force the color change, false otherwise.
+allowTransparent A Bool value that lets the user select a transparent color; set to true for transparent, false otherwise.
+forceWeb216 A Bool value that forces the specified color to fall within the web216 panel; set to true to force the color change, false otherwise.
 Returns
 The specified color in #rrggbbaa format (for syntax details, see Color string data type).
 
@@ -702,8 +703,7 @@ Reads the specified table. The tables are zero-indexed.*/
 public function readNthTable(filename:String, tablenumber:Int):Dynamic;
 //Reads in a panel state file, which is generated by fw.writePanelStateToFile(), and moves the panels, Property inspector, and toolbox to the appropriate locations.
 public function readPanelStateFromFile(filepath:String):Void;
-//Reloads the Common Library. If the user adds new widget, the library can be reloaded from the JSF as well.
-public function reloadCommonLibrary():Void;
+
 /*Returns
 The number of items that are replaced, or –1 if there are items in the document that remain to be searched.
 
@@ -750,7 +750,7 @@ defaultfromoptions By default false. Set true to save the document as per the cu
 
 Description
 Saves the specified document in the specified filename and format.*/
-public function saveAs(doc:jsf.Document, url:String,?defaultfromoptions:Boolean=false):Void;
+public function saveAs(doc:jsf.Document, url:String,?defaultfromoptions:Bool=false):Void;
 
 //Saves the specified document as a native Fireworks PNG file with the specified name. To save a document to another format, such as GIF or JPEG, use fw.exportDocumentAs().
 public function saveDocument(document:jsf.Document, ?fileURL:String):Void;
@@ -809,7 +809,7 @@ public function setActiveViewScale(scale:Float,center:Point):Void;
 
 // Example
 // The following command makes the fourth document the active document.
-public function setActiveWindow(document:jsf.Document,?onlyforDreamweaver):Void;
+public function setActiveWindow(document:jsf.Document,?onlyforDreamweaver:Bool):Void;
 
 
 /*Arguments
@@ -883,7 +883,7 @@ doc A Document object that specifies the document to be used for updating the HT
 htmlUrl The filename of the HTML file to update, which is expressed as a file://URL. To force Fireworks to display the Update HTML dialog box, pass null for htmlUrl. If you pass null for htmlUrl, bRecoverFromError is ignored.
 bRecoverFromError If bRecoverFromError is true and the HTML update encounters an error, Fireworks displays a Confirmation dialog box and attempts to recover. If it is false, Fireworks fails without notifying the user if it encounters an error.
 Returns
-A Boolean value: true if the HTML was updated; false otherwise.
+A Bool value: true if the HTML was updated; false otherwise.
 
 Description
 Updates the HTML that was previously exported from Fireworks.
@@ -900,7 +900,7 @@ public function writePanelStateToFile(filepath:String):Void;
 /*Arguments
 promptString The prompt message that appears in the dialog box.
 Returns
-A Boolean value: true if the user selected the Yes button; false otherwise.
+A Bool value: true if the user selected the Yes button; false otherwise.
 Description
 Displays a dialog box that contains buttons labeled Yes and No.
 Example

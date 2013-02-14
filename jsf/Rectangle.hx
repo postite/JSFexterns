@@ -10,7 +10,7 @@ fw.getDocumentDOM().addNewOval({left:72, top:79, right:236, bottom:228});
 package jsf;
 
 typedef Rectangle={
-	left;Float,
+	left:Float,
 	top:Float,
 	right:Float,
 	bottom:Float

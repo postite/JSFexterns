@@ -5,12 +5,24 @@
 //http://help.adobe.com/en_US/fireworks/cs/extend/WS5b3ccc516d4fbf351e63e3d1183c94856c-7fff.html
 /*The following table lists the properties of the Document object,
  along with their data types, acceptable values, and notes. 
- Read-only properties are marked with a bullet (•). 
+ Read-only properties are marked with a bullet ((default,null)). 
  You can also use many API calls to work with documents. For more information, 
  see Property inspector functions.*/
  ///
- 
+
 package jsf;
+
+import Fw.Point;
+typedef Guides=Dynamic
+typedef PathAttrs=Dynamic
+typedef PngText=Dynamic
+typedef Brush=Dynamic
+typedef Gradient=Dynamic
+typedef Fill=Dynamic
+typedef Frame=Dynamic
+typedef Layer=Dynamic
+typedef Texture=Dynamic
+
 @:native("")
 extern class Document{
 var backgroundColor:String; /* A color String that specifies the document
@@ -18,10 +30,10 @@ canvas color (for more information, see Color String data type).*/
 var backgroundURL:String; /* Sets a general URL for a document that uses
 a hotspot. Everything that is not covered by the hotspot has the
 background URL.*/
-var brushes •:Array; /* Array of Brush objects that are available
+var brushes (default,null):Array<Brush>; /* Array of Brush objects that are available
 for use in the document (for more information, see Brush object).*/
-var currentFrameNum:Int//zero-based index; /* The index of the current frame.*/
-var currentLayerNum:Int//zero-based index; /* The index of the current layer.*/
+var currentFrameNum:Int;//zero-based index; /* The index of the current frame.*/
+var currentLayerNum:Int;//zero-based index; /* The index of the current layer.*/
 var defaultAltText:String; /* Default Alt text for the output images.
 It works for single and sliced images. Sliced images get the default,
 unless specific text is specified for a slice. Corresponds to the
@@ -34,7 +46,7 @@ var exportFormatOptions:ExportOptions; /* Identical to exportOptions.
 Included for backward compatibility with Fireworks 2.*/
 var exportOptions:ExportOptions; /* ExportOptions object (for more information,
 see ExportOptions object).*/
-var exportSettings:object; /* ExportSettings object (for more information,
+var exportSettings:Dynamic; /* ExportSettings object (for more information,
 see ExportSettings object).*/
 var filePathForRevert:String; /* The path to the file from which this document
 was opened, which is expressed as file://URL, or null if
@@ -42,37 +54,37 @@ created from scratch.*/
 var filePathForSave:String; /* The location to which this document was
 saved, which is expressed as file://URL, or null if
 never saved.*/
-var fills •:Array; /* Array of Fill objects that are available
+var fills (default,null):Array<Fill>; /* Array of Fill objects that are available
 for use in the document (for more information, see Fill object).*/
-var frameCount:integer; /* The number of frames in the current document.*/
-var frameLoopingCount:integer; /* –1 — don’t repeat0 — repeat forever>
+var frameCount:Int; /* The number of frames in the current document.*/
+var frameLoopingCount:Int; /* –1 — don’t repeat0 — repeat forever>
 0 — repeat this number of times*/
-var frames •:Array; /* Array of Frame objects in the document (for
+var frames (default,null):Array<Frame>; /* Array of Frame objects in the document (for
 more information, see Frame object).*/
-var gammaPreview:Boolean; /* If set to true, the document
+var gammaPreview:Bool; /* If set to true, the document
 should be previewed in opposite-platform gamma. If set to false,
 the document colors are unadjusted.*/
-var gradients •:Array; /* Array of Gradient objects that are available
+var gradients (default,null):Array<Gradient>; /* Array of Gradient objects that are available
 for use in the document (for more information, see Gradient object).*/
 var gridColor:String; /* A color String that specifies the color
 of the grid display (for more information, see Color String data type).*/
-var gridOrigin:point; /* Used to set the origin of the grid. Corresponds
+var gridOrigin:jsf.Point; /* Used to set the origin of the grid. Corresponds
 to the point set when dragging the ruler origin from the upper-left
 of the document when rulers are visible.*/
-var gridSize:point; /* gridSize.x is the horizontal
+var gridSize:jsf.Point; /* gridSize.x is the horizontal
 grid size; gridSize.y is the vertical grid size.*/
-var guides •:object; /* Guides object (for more information, see Guides object).*/
-var height:integer; /* Total height of the document, in pixels.
+var guides (default,null):Guides; /* Guides object (for more information, see Guides object).*/
+var height:Int; /* Total height of the document, in pixels.
 To find the bottom edge of the document, use document.top + document.height. */
-var isDirty:Boolean; /* Set to true if the document
+var isDirty:Bool; /* Set to true if the document
 was modified since the last time it was saved.*/
-var isPaintMode •:Boolean; /* Set to true if the document
+var isPaintMode (default,null):Bool; /* Set to true if the document
 is currently in paint-mode editing, false otherwise.*/
-var isSymbolDocument • :Boolean; /* Set to true if the document
+var isSymbolDocument (default,null) :Bool; /* Set to true if the document
 is a Symbol or Button document, false if it is
 an ordinary document. You might see this when looking through the
 list of open documents and one is a symbol-editing window.*/
-var isValid:Boolean; /* Set to true if the document
+var isValid:Bool; /* Set to true if the document
 is open in Fireworks; false otherwise. (Occasionally
 the JavaScript object that is associated with a document lingers
 after the document closes; this property lets you check for that
@@ -86,53 +98,53 @@ var lastExportFile:String; /* The name that was used the last time the
 file was exported, or null if the file was never
 exported. For instance, if the document was last exported to "file:///files/current/logo.gif",
 it returns "logo.gif".*/
-var layers •:Array; /* An Array of Layer objects
+var layers (default,null):Array<Layer>; /* An Array of Layer objects
 in the document (for more information, see Layer object).*/
-var left:integer; /* Coordinate of the left edge of the document,
+var left:Int; /* Coordinate of the left edge of the document,
 in pixels. To find the right edge of the document, use document.left + document.width. */
 var mapType:String; /* Acceptable values are "client", "server",
 and "both". Corresponds to the image-map type selected
 in File > HTML Setup.*/
 var matteColor:String; /* A color String that corresponds to the matte
 color specified in the Optimize panel (for more information, see Color String data type). This String is used by the useMatteColor property.*/
-var onionSkinAfter:integer; /* The number of frames after the current frame
+var onionSkinAfter:Int; /* The number of frames after the current frame
 to show through onion skinning. Corresponds to the onion-skin controls
 in the left edge of the Frames panel. A value of 0 indicates
 no onion skinning; a very large value (such as 99,999)
 indicates onion skinning of all frames after the current frame.*/
-var onionSkinBefore:integer; /* Similar to the onionSkinAfter property,
+var onionSkinBefore:Int; /* Similar to the onionSkinAfter property,
 but refers to the number of frames to show through onion skinning
 before the current frame.*/
-var pagesCount •:integer; /* Returns the number of pages in the current
+var pagesCount (default,null):Int; /* Returns the number of pages in the current
 document. */
 var pageName:String; /* Returns the page name of the current page.*/
-var patterns •:object; /* The list of internal pattern names.*/
-var pathAttributes:object; /* The PathAttrs object (for more information,
+var patterns (default,null):Dynamic; /* The list of internal pattern names.*/
+var pathAttributes:PathAttrs; /* The PathAttrs object (for more information,
 see PathAttrs object).
 This object specifies default attributes that will be applied to
 all newly created objects.*/
-var pngText:object; /* A structure that can be used to store various
+var pngText:PngText; /* A structure that can be used to store various
 chunks of text in a well-known format. For more information, see The pngText property.*/
-var resolution:float; /* Document resolution, in pixels per unit
+var resolution:Float; /* Document resolution, in pixels per unit
 (for more information, see resolutionUnits). The
 range is 1 to 5000.*/
 var resolutionUnits:String; /* Units to be used with the resolution property.
 Acceptable values are "inch" and "cm".*/
-var savedSelections:object; /* Array of the saved bitmap selections in
+var savedSelections:Array<Dynamic>; /* Array of the saved bitmap selections in
 the active document.*/
-var textures:Array; /* Array of Texture objects that are available
+var textures:Array<Texture>; /* Array of Texture objects that are available
 for use in the document (for more information, see Texture object).*/
-var top:integer; /* Coordinate of the top edge of the document,
+var top:Int; /* Coordinate of the top edge of the document,
 in pixels. To find the bottom edge of the document, use document.top + document.height. */
-var useMatteColor:Boolean; /* If set to true, the matteColor property
+var useMatteColor:Bool; /* If set to true, the matteColor property
 is used when exporting documents with transparent backgrounds. If
 set to false, the matteColor property
 is ignored in this situation, and the exported file is matted against
 the document’s canvas color.*/
-var width:integer; /* The width of the document, in pixels. To
+var width:Int; /* The width of the document, in pixels. To
 find the right edge of the document, use document.left + document.width.*/
-var currentPageNum:integer; /* The index of the current page.*/
-var topLayers:Array; /* Array of top level layers within the document
+var currentPageNum:Int; /* The index of the current page.*/
+var topLayers:Array<Dynamic>; /* Array of top level layers within the document
 objects.*/
 
 

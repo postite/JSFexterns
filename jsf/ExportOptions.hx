@@ -26,6 +26,9 @@ The following table lists the properties of the ExportOptions object, along with
 */
 
 package jsf;
+import Fw.HexColor;
+typedef ExportFrameInfo=Dynamic
+typedef ExportPaletteInfo=Dynamic
 
 extern class ExportOptions{
 
@@ -44,7 +47,7 @@ default), "diffusion", and "2 by 2".*/
 public var ditherPercent:Int; /* 0 to 100; default value is 100.*/ 
 public var exportFormat:String; /* Acceptable values are "GIF", "JPEG", "PNG", "custom", and "GIF animation".
 There is no default; this value must be specified.*/ 
-public var frameInfo:Array; /* Array of ExportFrameInfo objects (for more
+public var frameInfo:Array<ExportFrameInfo>; /* Array of ExportFrameInfo objects (for more
 information, see ExportFrameInfo object); can be null (the default). */ 
 public var interlacedGIF:Bool; /* The default value is false.*/ 
 public var jpegQuality:Int; /* 1 to 100; the default value is 80.*/ 
@@ -62,9 +65,9 @@ public var numCustomEntries:Int; /* 0 to 256; default value is 0.*/
 public var numEntriesRequested:Int; /* 0 to 256; default value is 128.*/ 
 public var numGridEntries:Int; /* 0 to 256; default value is 6.*/ 
 public var optimized:Bool; /* Default value is true.*/ 
-public var paletteEntries:Array; /* Array of color Strings (for more information,
+public var paletteEntries:Array<HexColor>; /* Array of color Strings (for more information,
 see Color String data type); default value is null.*/ 
-public var paletteInfo:Array; /* Array of ExportPaletteInfo objects, or null if
+public var paletteInfo:Array<ExportPaletteInfo>; /* Array of ExportPaletteInfo objects, or null if
 all entries in the Array are default values (for more information,
 see ExportPaletteInfo object); default value is null.*/ 
 public var paletteMode:String; /* Acceptable values are "adaptive" (the
