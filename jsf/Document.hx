@@ -171,7 +171,12 @@ public function addNewImageViaCopy()
 public function addNewImageViaCut()
 public function addNewLayer()
 public function addNewLine()
-public function addNewOval()
+*/
+
+
+public function addNewOval(boundingRectangle:jsf.Rectangle):Void;
+
+/*
 public function addNewPage()
 public function addNewRectangle()
 public function addNewRectanglePrimitive()
@@ -504,6 +509,7 @@ public function unsetMasterPage()
 //apparently only available from a FW object
 //additional meth from Fw getDocumentDom queries..
 ///TODO
+
 public function combineCompoundShape():Void;
 public function createCompoundShape():Void;
 public function InsertPageForImport():Void;
