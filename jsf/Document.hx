@@ -217,7 +217,13 @@ public function clipPasteAttributes()
 public function clipPasteFromChannelToChannel()
 public function clipPasteInside()
 public function cloneSelection()
-public function close()
+*/
+
+/*Arguments
+bPromptToSaveChanges If bPromptToSaveChanges is true, and the document was changed since the last time it was saved, the user is prompted to save any changes to the document. If bPromptToSaveChanges is false, the user is not prompted, and changes to the document are discarded.*/
+public function close(bPromptToSaveChanges:Bool):Void;
+
+/*
 public function convertAnimSymbolToGraphicSymbol()
 public function convertMarqueeToPath()
 public function convertPathToMarquee()
@@ -284,7 +290,27 @@ public function group()
 public function hasCharacterMarkup()
 public function hasMasterPage()
 public function hideSelection()
-public function importFile()
+*/
+
+
+
+/*Arguments
+fileURL The filename of the file to be imported, which is expressed as a file://URL.
+boundingRectangle A rectangle that specifies the size to make the imported file (see Rectangle data type). If boundingRectangle is specified with left == right and top == bottom, the file is brought in unscaled with its top-left corner at the specified location, and the third argument is ignored.
+bMaintainAspectRatio If bMaintainAspectRatio is true, the file is scaled to the largest size that fits within boundingRectangle while retaining the file’s current aspect ratio. (This is a handy option for creating thumbnails.) If it is false, the file is scaled to fill boundingRectangle.
+Returns
+Nothing.
+
+Description
+Imports the specified file at the specified location.
+
+Example
+The following command imports the specified file and maintains its aspect ratio:
+
+fw.getDocumentDOM().importFile("file:///C|/images/foo.psd", {left:25, top:50, right:100, bottom:250}, true);*/
+public function importFile(fileURL:String, boundingRectangle:Rectangle, bMaintainAspectRatio:Bool):Void;
+
+/*
 public function importSymbol()
 public function importSymbolButNotAsAlias()
 public function inLaunchAndEdit()
@@ -414,7 +440,11 @@ public function setElementMaskShowAttrs()
 public function setElementName()
 public function setElementVisible()
 public function setElementVisibleByName()
-public function setExportOptions()
+*/
+
+
+public function setExportOptions(exportOptions:ExportOptions):Void;
+/*
 public function setExportSettings()
 public function setFill()
 public function setFillColor()

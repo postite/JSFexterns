@@ -9,7 +9,7 @@ typedef Struct=Dynamic
 
 /*
 Element is an abstract or base class; nothing of class Element ever exists. However, it is useful for simplifying the other class descriptions. Read-only properties are marked with a bullet (•).*/
-typedef Element = {
+extern class Element  {
 
 var blendMode:String; /* Acceptable values are "normal", "multiply", "screen", "darken", "lighten", "difference", "hue", "saturation", "color", "luminosity", "invert", "tint",
 and "erase".*/ 

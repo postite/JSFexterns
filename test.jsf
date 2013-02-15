@@ -1,7 +1,293 @@
-var Test = function() {
-	fw.getDocumentDOM().addNewOval({ left : 72, top : 79, right : 236, bottom : 228});
+var ExportSprite = function() {
+	this.dom = fw.getDocumentDOM();
+	this.sel = fw.selection;
+	this["export"]();
 };
-Test.main = function() {
-	new Test();
+ExportSprite.__name__ = true;
+ExportSprite.main = function() {
+	new ExportSprite();
 }
-Test.main();
+ExportSprite.prototype = {
+	selectSaveLocation: function() {
+		console.log("multisprite" + Std.string(this.multiSprites));
+		if(!this.multiSprites) {
+			this.filePath = fw.browseForFileURL("save");
+			console.log("filePath" + this.filePath);
+		} else {
+			this.dir = fw.browseForFolderURL("Select export directory for sprite images",Files.getDirectory(this.dom.lastExportFile) != null?Files.getDirectory(this.dom.lastExportFile):Files.getDirectory(this.dom.lastExportFile));
+			console.log("dir");
+		}
+		console.log("check if null");
+		if(this.dir == null && this.filePath == null) return;
+		console.log("state2");
+		if(this.filePath == null) {
+			console.log("state3");
+			this.filePath = this.dir + "/" + (this.dom.docTitleWithoutExtension != null?this.dom.docTitleWithoutExtension:"Untitled");
+			console.log("filePath=" + this.filePath);
+		} else if(this.dir == null) {
+			console.log("state4");
+			this.dir = Files.getDirectory(this.filePath);
+			console.log("dir=" + this.dir);
+		}
+		return;
+	}
+	,getFileURL: function(url,exportOptions) {
+		var name = url.split("/").pop().split("\\").pop();
+		var extension = exportOptions.exportFormat.toLowerCase();
+		if(extension == "jpeg") extension = "jpg";
+		if(name.indexOf("." + extension) != name.length - 1) name += "." + extension;
+		return name;
+	}
+	,getFilename: function(url) {
+		return url.split("/").pop().split("\\").pop().split(".").shift();
+	}
+	,switchCases: function() {
+		if(this.slices.length == 0) return js.Lib.alert("No slices on this page; cannot continue. This command is used to export slices and states into a single sprite image."); else if(this.slices.length == 1) {
+			if(this.dom.frames.length == 1) {
+				this.multiSprites = false;
+				return js.Lib.alert("There is only one slice and one state; cannot continue. This command is used to export slices and states into a single sprite image. You must select more than one slice or have multiple states in the document.");
+			} else if(this.dom.frames.length > 1) this.multiSprites = fw.yesNoDialog("Multiple slices are selected. Press YES to export all slices to a single sprite sheet image, press NO to export each slice as a separate sprite image.") == null;
+		} else if(this.slices.length > 1) {
+			if(this.dom.frames.length == 1) {
+				if(confirm("This page has only one state; slices will be merged into a single sprite image.") == null) return;
+			} else this.multiSprites = false;
+		}
+		return;
+	}
+	,generateSpriteData: function() {
+		console.log("generateSpriteData");
+		var sprites = new Array();
+		if(this.multiSprites) {
+			var _g1 = 0, _g = this.sliceFiles.length;
+			while(_g1 < _g) {
+				var i = _g1++;
+				var file = this.sliceFiles[i];
+				fw.createFireworksDocument({ x : file.width, y : file.height * file.frames.length},{ pixelsPerUnit : 72, units : "inch"},this.dom.backgroundColor);
+				var sprite = { name : this.getFilename(file.name), url : this.getFileURL(file.name,file.exportOptions), width : this.slices[i].width, height : this.slices[i].height, children : []};
+				sprites.push(sprite);
+				var _g3 = 0, _g2 = this.sliceFiles[i].frames.length;
+				while(_g3 < _g2) {
+					var f = _g3++;
+					fw.getDocumentDOM().importFile(this.sliceFiles[i].frames[f],{ left : 0, top : file.height * f, right : file.width, bottom : file.height * f + file.height},false);
+					sprite.children.push({ name : this.sliceFiles[i].name, state : this.dom.frames[f].name != null?this.dom.frames[f].name:Std.string(f), index : f, x : -fw.selection[0].left, y : -fw.selection[0].top});
+				}
+				fw.getDocumentDOM().setExportOptions(this.dom.exportOptions);
+				fw.exportDocumentAs(fw.getDocumentDOM(),this.dir + "/" + file.name,file.exportOptions);
+				fw.getDocumentDOM().close(false);
+			}
+		} else {
+			var totalWidth = 0;
+			var totalHeight = 0;
+			var _g = 0, _g1 = this.sliceFiles;
+			while(_g < _g1.length) {
+				var slice = _g1[_g];
+				++_g;
+				totalWidth += Math.ceil(slice.width);
+				totalHeight = Math.max(slice.height * slice.frames.length,totalHeight);
+			}
+			fw.createFireworksDocument({ x : totalWidth, y : totalHeight},{ pixelsPerUnit : 72, units : "inch"},this.dom.backgroundColor);
+			var sprite = { name : this.getFilename(this.filePath), url : this.getFileURL(this.filePath,this.dom.exportOptions), width : this.slices[0].width, height : this.slices[0].height, children : new Array()};
+			sprites.push(sprite);
+			var currX = 0;
+			var _g1 = 0, _g = this.sliceFiles.length;
+			while(_g1 < _g) {
+				var i = _g1++;
+				var file = this.sliceFiles[i];
+				var _g3 = 0, _g2 = this.sliceFiles[i].frames.length;
+				while(_g3 < _g2) {
+					var f = _g3++;
+					fw.getDocumentDOM().importFile(this.sliceFiles[i].frames[f],{ left : currX, top : file.height * f, right : currX + file.width, bottom : file.height * f + file.height},false);
+					sprite.children.push({ name : this.sliceFiles[i].name, state : this.dom.frames[f].name, index : f, x : -currX, y : -file.height * f, width : this.sliceFiles[i].width, height : this.sliceFiles[i].height});
+				}
+				currX += file.width;
+			}
+			fw.getDocumentDOM().setExportOptions(this.dom.exportOptions);
+			fw.exportDocumentAs(fw.getDocumentDOM(),this.filePath,this.dom.exportOptions);
+		}
+	}
+	,parseSlices: function() {
+		console.log("parseSlice");
+		this.sliceFiles = new Array();
+		var sliceNameNum = 1;
+		var sliceCount = 0;
+		var _g = 0, _g1 = this.slices;
+		while(_g < _g1.length) {
+			var slice = _g1[_g];
+			++_g;
+			console.log("first loop");
+			var file = { width : slice.width, height : slice.height, exportOptions : slice.exportOptions != null?slice.exportOptions:this.dom.exportOptions, name : slice.baseName != null?slice.baseName:"Slice" + sliceNameNum++, frames : new Array()};
+			this.sliceFiles.push(file);
+			var opts = { };
+			opts.exportFormat = "PNG";
+			opts.colorMode = "32 bit";
+			opts.crop = true;
+			opts.cropLeft = slice.left - this.dom.left;
+			opts.cropRight = slice.left + slice.width - this.dom.left;
+			opts.cropTop = slice.top - this.dom.top;
+			opts.cropBottom = slice.top + slice.height - this.dom.top;
+			var frameCount = 0;
+			var _g2 = 0, _g3 = this.dom.frames;
+			while(_g2 < _g3.length) {
+				var frame = _g3[_g2];
+				++_g2;
+				console.log("2nd loop");
+				this.dom.currentFrameNum = frameCount;
+				console.log("step1");
+				var tmp = Files.getTempFilePath(null) + "_" + sliceCount + "_" + frameCount;
+				console.log("step2");
+				file.frames[frameCount] = tmp + "." + opts.exportFormat;
+				console.log("step3");
+				fw.exportDocumentAs(this.dom,tmp,opts);
+				console.log("step4");
+				frameCount++;
+				console.log("end2nd loop");
+			}
+			sliceCount++;
+		}
+		console.log("end PrseSlice");
+	}
+	,'export': function() {
+		if(this.dom == null) return;
+		this.slices = new Array();
+		var i = this.sel.length;
+		console.log(this.sel.length);
+		var _g = 0, _g1 = this.sel;
+		while(_g < _g1.length) {
+			var a = _g1[_g];
+			++_g;
+			if(a.sliceID != null) {
+				console.log("slice");
+				this.slices.push(a);
+			}
+		}
+		if(this.slices.length == 0) {
+			console.log("no select");
+			var allSlices = new Array();
+			var _g = 0, _g1 = this.dom.layers;
+			while(_g < _g1.length) {
+				var layer = _g1[_g];
+				++_g;
+				if(layer.layerType == "web") {
+					var e = layer.frames[0].elements.length;
+					var elements = layer.frames[0].elements;
+					var _g2 = 0;
+					while(_g2 < elements.length) {
+						var el = elements[_g2];
+						++_g2;
+						if(el.sliceID != null) allSlices.push(el);
+					}
+				}
+			}
+			console.log("allSlices" + allSlices.length);
+			if(allSlices.length > 0 && confirm("No slices selected; export all slices?") != null) this.slices = allSlices;
+		}
+		this.multiSprites = false;
+		this.switchCases();
+		this.selectSaveLocation();
+		this.oldFrameNum = this.dom.currentFrameNum;
+		this.parseSlices();
+		this.generateSpriteData();
+		return;
+	}
+}
+var Std = function() { }
+Std.__name__ = true;
+Std.string = function(s) {
+	return js.Boot.__string_rec(s,"");
+}
+var js = js || {}
+js.Boot = function() { }
+js.Boot.__name__ = true;
+js.Boot.__string_rec = function(o,s) {
+	if(o == null) return "null";
+	if(s.length >= 5) return "<...>";
+	var t = typeof(o);
+	if(t == "function" && (o.__name__ || o.__ename__)) t = "object";
+	switch(t) {
+	case "object":
+		if(o instanceof Array) {
+			if(o.__enum__) {
+				if(o.length == 2) return o[0];
+				var str = o[0] + "(";
+				s += "\t";
+				var _g1 = 2, _g = o.length;
+				while(_g1 < _g) {
+					var i = _g1++;
+					if(i != 2) str += "," + js.Boot.__string_rec(o[i],s); else str += js.Boot.__string_rec(o[i],s);
+				}
+				return str + ")";
+			}
+			var l = o.length;
+			var i;
+			var str = "[";
+			s += "\t";
+			var _g = 0;
+			while(_g < l) {
+				var i1 = _g++;
+				str += (i1 > 0?",":"") + js.Boot.__string_rec(o[i1],s);
+			}
+			str += "]";
+			return str;
+		}
+		var tostr;
+		try {
+			tostr = o.toString;
+		} catch( e ) {
+			return "???";
+		}
+		if(tostr != null && tostr != Object.toString) {
+			var s2 = o.toString();
+			if(s2 != "[object Object]") return s2;
+		}
+		var k = null;
+		var str = "{\n";
+		s += "\t";
+		var hasp = o.hasOwnProperty != null;
+		for( var k in o ) { ;
+		if(hasp && !o.hasOwnProperty(k)) {
+			continue;
+		}
+		if(k == "prototype" || k == "__class__" || k == "__super__" || k == "__interfaces__" || k == "__properties__") {
+			continue;
+		}
+		if(str.length != 2) str += ", \n";
+		str += s + k + " : " + js.Boot.__string_rec(o[k],s);
+		}
+		s = s.substring(1);
+		str += "\n" + s + "}";
+		return str;
+	case "function":
+		return "<function>";
+	case "string":
+		return o;
+	default:
+		return String(o);
+	}
+}
+js.Lib = function() { }
+js.Lib.__name__ = true;
+js.Lib.alert = function(v) {
+	alert(js.Boot.__string_rec(v,""));
+}
+Math.__name__ = ["Math"];
+Math.NaN = Number.NaN;
+Math.NEGATIVE_INFINITY = Number.NEGATIVE_INFINITY;
+Math.POSITIVE_INFINITY = Number.POSITIVE_INFINITY;
+Math.isFinite = function(i) {
+	return isFinite(i);
+};
+Math.isNaN = function(i) {
+	return isNaN(i);
+};
+String.__name__ = true;
+Array.__name__ = true;
+if(typeof document != "undefined") js.Lib.document = document;
+if(typeof window != "undefined") {
+	js.Lib.window = window;
+	js.Lib.window.onerror = function(msg,url,line) {
+		var f = js.Lib.onerror;
+		if(f == null) return false;
+		return f(msg,[url + ":" + line]);
+	};
+}
+ExportSprite.main();

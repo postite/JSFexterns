@@ -38,10 +38,10 @@ public var applyScale:Bool; /* The default value is true.*/
 public var colorMode:String; /* Acceptable values are "indexed" (the
 default), "24 bit", and "32 bit".*/ 
 public var crop:Bool; /* The default value is false.*/ 
-public var cropBottom:Int; /* The default value is 0.*/ 
-public var cropLeft:Int; /* The default value is 0.*/ 
-public var cropRight:Int; /* The default value is 0.*/ 
-public var cropTop:Int; /* The default value is 0.*/ 
+public var cropBottom:Float; /* The default value is 0.*/ 
+public var cropLeft:Float; /* The default value is 0.*/ 
+public var cropRight:Float; /* The default value is 0.*/ 
+public var cropTop:Float; /* The default value is 0.*/ 
 public var ditherMode:String; /* Acceptable values are "none" (the
 default), "diffusion", and "2 by 2".*/ 
 public var ditherPercent:Int; /* 0 to 100; default value is 100.*/ 

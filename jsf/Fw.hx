@@ -53,151 +53,151 @@ typedef Dialogs={
 @:native("fw") //todo
 extern class Fw{
 
-var activeTool:String; /* The active tool in the application.*/ 
-var activeViewScale:Float; /* The scaling (zoom value) of the active view.
+static public var activeTool:String; /* The active tool in the application.*/ 
+static public var activeViewScale:Float; /* The scaling (zoom value) of the active view.
 1.0=100% of the normal view.*/ 
-var appBatchCodeDir:String; /* The path to the Batch Code directory, which
+static public var appBatchCodeDir:String; /* The path to the Batch Code directory, which
 is expressed as file://URL.*/ 
-var appDir:String; /* The path to the directory that contains
+static public var appDir:String; /* The path to the directory that contains
 the Fireworks application, which is expressed as file://URL.*/ 
-var appExportSettingsDir:String; /* The path to the Export Settings directory,
+static public var appExportSettingsDir:String; /* The path to the Export Settings directory,
 which is expressed as file://URL. In Fireworks, this
 folder is stored on a per-user basis on multiuser systems. Even
 on single-user systems, this folder is not inside the Fireworks
 installation directory. */ 
-var appFavoritesDir:String; /* The path to the URL Libraries directory,
+static public var appFavoritesDir:String; /* The path to the URL Libraries directory,
 which is expressed as file://URL. In Fireworks, this
 folder is stored on a per-user basis on multiuser systems. Even
 on single-user systems, this folder is not inside the Fireworks
 installation directory. */ 
-var appHelpDir:String; /* The path to the directory that contains
+static public var appHelpDir:String; /* The path to the directory that contains
 the Fireworks help file, which is expressed as file://URL.*/ 
-var appHtmlCodeDir:String; /* The path to the HTML Code directory, which
+static public var appHtmlCodeDir:String; /* The path to the HTML Code directory, which
 is expressed as file://URL.*/ 
-var appJsCommandsDir:String; /* The path to the Commands directory, which
+static public var appJsCommandsDir:String; /* The path to the Commands directory, which
 is expressed as file://URL.*/ 
-var appJsExtensionsDir:String; /* The path to the JSExtensions directory,
+static public var appJsExtensionsDir:String; /* The path to the JSExtensions directory,
 which is expressed as file://URL.*/ 
-var appMacCreator:String; /* In the format: "MKBY"*/ 
-var appMacJsfFileType:String; /* In the format: "TEXT"*/ 
-var appName:String; /* The name of the application. This attribute
+static public var appMacCreator:String; /* In the format: "MKBY"*/ 
+static public var appMacJsfFileType:String; /* In the format: "TEXT"*/ 
+static public var appName:String; /* The name of the application. This attribute
 is part of the common API, so it also appears as app.appName (as
 implemented in Adobe Dreamweaver).*/ 
-var appPatternsDir:String; /* The path to the Patterns directory, which
+static public var appPatternsDir:String; /* The path to the Patterns directory, which
 is expressed as file://URL.*/ 
-var appPrefsDir:String; /* The path to the Preferences directory, which
+static public var appPrefsDir:String; /* The path to the Preferences directory, which
 is expressed as a file://URL.*/ 
-var appPresetsDir:String; /* The path to the Presets directory, which
+static public var appPresetsDir:String; /* The path to the Presets directory, which
 is expressed as file://URL.In Fireworks, this folder
 is stored on a per-user basis on multiuser systems. Even on single-user
 systems, this folder is not inside the Fireworks installation directory. */ 
-var appSettingsDir:String; /* The path to the Settings directory, which
+static public var appSettingsDir:String; /* The path to the Settings directory, which
 is expressed as file://URL.*/ 
-var appSmartShapesDir:String; /* The path to the application’s Auto Shapes
+static public var appSmartShapesDir:String; /* The path to the application’s Auto Shapes
 directory, which is expressed as file://URL.*/ 
-var appSmartShapeToolsDir:String; /* The path to the application’s Auto Shape
+static public var appSmartShapeToolsDir:String; /* The path to the application’s Auto Shape
 Tools directory, which is expressed as file://URL.*/ 
-var appStylesDir:String; /* The path to the Styles directory, which
+static public var appStylesDir:String; /* The path to the Styles directory, which
 is expressed as file://URL.In Fireworks, this folder
 is stored on a per-user basis on multiuser systems. Even on single-user
 systems, this folder is not inside the Fireworks installation directory. */ 
-var appSwfCommandsDir:String; /* The path to the SWF Commands directory,
+static public var appSwfCommandsDir:String; /* The path to the SWF Commands directory,
 which is expressed as a file://URL.*/ 
-var appSymbolLibrariesDir:String; /* The path to the Libraries directory, which
+static public var appSymbolLibrariesDir:String; /* The path to the Libraries directory, which
 is expressed as file://URL.*/ 
-var appTemplatesDir:String; /* */ 
-var appTexturesDir:String; /* The path to the Textures directory, which
+static public var appTemplatesDir:String; /* */ 
+static public var appTexturesDir:String; /* The path to the Textures directory, which
 is expressed as file://URL.*/ 
-var appXtrasDir:String; /* The path to the Xtras directory, which is
+static public var appXtrasDir:String; /* The path to the Xtras directory, which is
 expressed asfile://URL.*/ 
-var batchStatusString:String; /* The String that currently appears in the
+static public var batchStatusString:String; /* The String that currently appears in the
 Batch Progress dialog box. Set this property to change the String
 being displayed. Use with progressCountCurrent and progressCountTotal.*/ 
-var currentScriptDir:String; /* The path to the directory of the currently
+static public var currentScriptDir:String; /* The path to the directory of the currently
 running script, which is expressed as a file://URL (or could be null).This
 path goes to the directory in which the script resides, not a full
 file path to the script itself (it excludes the script’s filename).*/ 
-var currentScriptFileName:String; /* The filename of the currently running script
+static public var currentScriptFileName:String; /* The filename of the currently running script
 (or could be null).This name is the script’s
 filename, not the full path.*/ 
-var dialogs:Dialogs; /* Provides access to an instance of the Dialogs
+static public var dialogs:Dialogs; /* Provides access to an instance of the Dialogs
 class, which opens specific dialog boxes.*/ 
-var _dismissBatchDialogWhenDone:Bool; /* If set to true, Fireworks
+static public var _dismissBatchDialogWhenDone:Bool; /* If set to true, Fireworks
 will automatically close the Batch Process dialog box when the script
 finishes. This static function has no effect if the Batch Process dialog
 box does not appear.*/ 
-var documentList:Array<Document>; /* Array of the current open Document objects
+static public var documentList:Array<Document>; /* Array of the current open Document objects
 (for more information, see The Document object). If no document is open, it returns an Array
 of length zero.*/ 
-var documents:Array<Document>; /* Array of the current open Document objects
+static public var documents:Array<Document>; /* Array of the current open Document objects
 (for more information, see The Document object). If no document is open, returns an Array
 of length zero.*/ 
-var ellipseBCPConst:Float; /* A fixed value of 0.55229187012 used to calculate
+static public var ellipseBCPConst:Float; /* A fixed value of 0.55229187012 used to calculate
 the distance between a point and its predecessor/successor for a perfect
 circle. For example, for a circle with a radius of 100 pixels, the
 predecessor/successor is 100*public static function ellipseBCPConst pixels
 away from the point itself.*/ 
-var errorReportingOK:Bool; /* If set to true, Fireworks
+static public var errorReportingOK:Bool; /* If set to true, Fireworks
 will allow posting an error while a script is running.*/ 
-var files:Dynamic; /* The FilesClass object used to perform file
+static public var files:Dynamic; /* The FilesClass object used to perform file
 operations (open, close, delete, and so on).*/ 
-var getDynamicSWFURL:String; /* Returns the location of the SWF file.*/ 
-var getEndBackgroundColor:HexColor; /* Returns the end color for the background
+static public var getDynamicSWFURL:String; /* Returns the location of the SWF file.*/ 
+static public var getEndBackgroundColor:HexColor; /* Returns the end color for the background
 gradient. This static function is only useful for the Windows platform.*/ 
-var getStartBackgroundColor:HexColor; /* Returns the start color for the background
+static public var getStartBackgroundColor:HexColor; /* Returns the start color for the background
 gradient. This static function is only useful for the Windows platform.*/ 
-var historyPalette:Dynamic; /* History panel object. There are no DOM properties
+static public var historyPalette:Dynamic; /* History panel object. There are no DOM properties
 for the History panel, only API calls. For more information, see History panel static functions.*/ 
-var isConnectedToInternet:Int; /* Returns whether the operating system is
+static public var isConnectedToInternet:Int; /* Returns whether the operating system is
 connected to the Internet. The Start Page has a dynamic content
 panel that loads content from the Internet. The Start Page queries
 this property before attempting to download the dynamic content.*/ 
-var mruRecentFilesList:Array<String>; /* Array of recent open files. If there are
+static public var mruRecentFilesList:Array<String>; /* Array of recent open files. If there are
 no open files, returns an Array length of zero.*/ 
-var mruRecentFileNames:Array<String>; /* Array of recent open file names. If there
+static public var mruRecentFileNames:Array<String>; /* Array of recent open file names. If there
 are no open files, returns an Array length of zero.*/ 
-var platform :String; /* The String "mac" if Fireworks
+static public var platform :String; /* The String "mac" if Fireworks
 is running on the Macintosh, or "win" if running
 on Windows.*/ 
-var progressCountCurrent :Int; /* The first number (x) that appears in the
+static public var progressCountCurrent :Int; /* The first number (x) that appears in the
 Batch Progress dialog box, in the “File x of y” field. Set this
 property to change the number.*/ 
-var progressCountTotal:Int; /* The second number (y) that appears in the
+static public var progressCountTotal:Int; /* The second number (y) that appears in the
 Batch Progress dialog box, in the “File x of y” field. Set this
 property to change the number.*/ 
-var screenRect:jsf.Rectangle; /* The size of the main screen on this computer,
+static public var screenRect:jsf.Rectangle; /* The size of the main screen on this computer,
 in pixels. Useful for positioning windows or panels.*/ 
-var selection:Array<Dynamic>; /* Array of the selected objects in the active
+static public var selection:Array<Element>; /* Array of the selected objects in the active
 document. If nothing is selected, it returns an Array of length
 zero. If no document is open, it returns null. */ 
-var selectedMask:Dynamic; /* If a single item is selected and that item
+static public var selectedMask:Dynamic; /* If a single item is selected and that item
 is a mask, this property returns an ElementMask object (for more
 information, see ElementMask object); otherwise, it returns null.*/ 
-var styles:Array<Style>; /* Array of the Style object that is currently
+static public var styles:Array<Style>; /* Array of the Style object that is currently
 loaded in the Style panel (for more information, see Style object).*/ 
-var textInsertionIndex:Int; /* Insertion index into the current active
+static public var textInsertionIndex:Int; /* Insertion index into the current active
 text object. If there is no text selected, returns a value of -1.*/ 
-var textInsertionLength:Int; /* Insertion length into the current active
+static public var textInsertionLength:Int; /* Insertion length into the current active
 text object. If there is no text selected, returns a value of -1.*/ 
-var textOutputEncoding:String; /* The default text encoding for any text file
+static public var textOutputEncoding:String; /* The default text encoding for any text file
 that the JavaScript interpreter generates. Use "iso-8859-1" for
 ASCII or "utf-8" for Unicode.*/ 
-var userJsCommandsDir:String; /* The path to the user-level Commands directory,
+static public var userJsCommandsDir:String; /* The path to the user-level Commands directory,
 which is expressed as a file://URL.In Fireworks, this folder
 is stored on a per-user basis on multiuser systems. Even on single-user
 systems, this folder is not inside the Fireworks installation directory. */ 
-var userSmartShapesDir:String; /* The path to the user’s Auto Shapes directory,
+static public var userSmartShapesDir:String; /* The path to the user’s Auto Shapes directory,
 which is expressed as a file://URL*/ 
-var userSmartShapeToolsDir:String; /* The path to the user’s Auto Shape Tools
+static public var userSmartShapeToolsDir:String; /* The path to the user’s Auto Shape Tools
 directory, which is expressed as a file://URL.*/ 
-var userSymbolLibrariesDir:String; /* The path to the user’s Symbol Libraries,
+static public var userSymbolLibrariesDir:String; /* The path to the user’s Symbol Libraries,
 which is expressed as file://URL.*/ 
-var userSwfCommandsDir:String; /* The path to the user-level SWF Commands
+static public var userSwfCommandsDir:String; /* The path to the user-level SWF Commands
 directory, which is expressed as a file://URL.In Fireworks,
 this folder is stored on a per-user basis on multiuser systems.
 Even on single-user systems, this folder is not inside the Fireworks
 installation directory. */ 
-var xhtmlFormat:Bool; /* Determines whether the JavaScript interpreter
+static public var xhtmlFormat:Bool; /* Determines whether the JavaScript interpreter
 should output XHTML formatted files or HTML formatted files; XHTML (true)
 or HTML (false).*/ 
 
@@ -209,13 +209,13 @@ or HTML (false).*/
 public static function browseDocument(URL:String):Void;
 
 //browseType Acceptable values are "open", "select", and "save". The first two values display an Open dialog box; each is acceptable for compatibility with Adobe Dreamweaver. The third value displays a Save dialog box.title and previewArea Ignored by Fireworks but are accepted for compatibility with Dreamweaver.
-public static function browseForFileURL(browseType:String, title:String, ?previewArea:Dynamic):String; //The file URL selected by the user, or null if the dialog box was canceled.
+public static function browseForFileURL(browseType:String, ?title:String, ?previewArea:Dynamic):String; //The file URL selected by the user, or null if the dialog box was canceled.
 
 //Displays a dialog box that lets a user select a particular directory.
 // Arguments
 // title An optional string that specifies a title for the dialog box that appears. If it is omitted or null, a default title appears.
 // startFolder An optional string that serves as the root directory for the dialog box that appears. If it is omitted or null, the browse dialog box displays an unspecified directory, depending on your system configuration. Generally, it is the last directory used.
-public static function browseForFolderURL(?title:String,?startFolder:String):Void;
+public static function browseForFolderURL(?title:String,?startFolder:String):String;
 
 public static function browseHelp(helpID:Int):Void;//Opens the specified help topic in the help viewer.
 

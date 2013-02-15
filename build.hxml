@@ -1,5 +1,5 @@
 
--main Test
+-main ExportSprite
 -cp JSFexterns
 --dead-code-elimination
 -js test.jsf
