@@ -1,14 +1,29 @@
+function $extend(from, fields) {
+	function inherit() {}; inherit.prototype = from; var proto = new inherit();
+	for (var name in fields) proto[name] = fields[name];
+	return proto;
+}
 var ExportSprite = function() {
 	this.dom = fw.getDocumentDOM();
 	this.sel = fw.selection;
 	this["export"]();
+	this.exportHtml();
 };
 ExportSprite.__name__ = true;
 ExportSprite.main = function() {
 	new ExportSprite();
 }
 ExportSprite.prototype = {
-	selectSaveLocation: function() {
+	exportCSS: function() {
+		var view = new CSSView().execute({ states : this.states, spritename : "picto", sprites : this.sprites});
+		return view;
+	}
+	,exportHtml: function() {
+		var view = new HTMLView().execute({ states : this.states, sprites : this.sprites, style : this.exportCSS()});
+		this.dom.clipCopyJsToExecute(view);
+		js.Lib.alert(view);
+	}
+	,selectSaveLocation: function() {
 		console.log("multisprite" + Std.string(this.multiSprites));
 		if(!this.multiSprites) {
 			this.filePath = fw.browseForFileURL("save");
@@ -56,7 +71,7 @@ ExportSprite.prototype = {
 	}
 	,generateSpriteData: function() {
 		console.log("generateSpriteData");
-		var sprites = new Array();
+		this.sprites = new Array();
 		if(this.multiSprites) {
 			var _g1 = 0, _g = this.sliceFiles.length;
 			while(_g1 < _g) {
@@ -64,7 +79,7 @@ ExportSprite.prototype = {
 				var file = this.sliceFiles[i];
 				fw.createFireworksDocument({ x : file.width, y : file.height * file.frames.length},{ pixelsPerUnit : 72, units : "inch"},this.dom.backgroundColor);
 				var sprite = { name : this.getFilename(file.name), url : this.getFileURL(file.name,file.exportOptions), width : this.slices[i].width, height : this.slices[i].height, children : []};
-				sprites.push(sprite);
+				this.sprites.push(sprite);
 				var _g3 = 0, _g2 = this.sliceFiles[i].frames.length;
 				while(_g3 < _g2) {
 					var f = _g3++;
@@ -73,11 +88,19 @@ ExportSprite.prototype = {
 				}
 				fw.getDocumentDOM().setExportOptions(this.dom.exportOptions);
 				fw.exportDocumentAs(fw.getDocumentDOM(),this.dir + "/" + file.name,file.exportOptions);
-				fw.getDocumentDOM().close(false);
 			}
 		} else {
 			var totalWidth = 0;
 			var totalHeight = 0;
+			if(this.dom.frames.length > 1) {
+				this.states = new Array();
+				var _g = 0, _g1 = this.dom.frames;
+				while(_g < _g1.length) {
+					var frame = _g1[_g];
+					++_g;
+					this.states.push(frame.name);
+				}
+			}
 			var _g = 0, _g1 = this.sliceFiles;
 			while(_g < _g1.length) {
 				var slice = _g1[_g];
@@ -87,7 +110,7 @@ ExportSprite.prototype = {
 			}
 			fw.createFireworksDocument({ x : totalWidth, y : totalHeight},{ pixelsPerUnit : 72, units : "inch"},this.dom.backgroundColor);
 			var sprite = { name : this.getFilename(this.filePath), url : this.getFileURL(this.filePath,this.dom.exportOptions), width : this.slices[0].width, height : this.slices[0].height, children : new Array()};
-			sprites.push(sprite);
+			this.sprites.push(sprite);
 			var currX = 0;
 			var _g1 = 0, _g = this.sliceFiles.length;
 			while(_g1 < _g) {
@@ -144,7 +167,7 @@ ExportSprite.prototype = {
 			}
 			sliceCount++;
 		}
-		console.log("end PrseSlice");
+		console.log("end ParseSlice");
 	}
 	,'export': function() {
 		if(this.dom == null) return;
@@ -189,11 +212,144 @@ ExportSprite.prototype = {
 		this.generateSpriteData();
 		return;
 	}
+	,__class__: ExportSprite
 }
+var erazor = erazor || {}
+if(!erazor.macro) erazor.macro = {}
+erazor.macro.Template = function() {
+};
+erazor.macro.Template.__name__ = true;
+erazor.macro.Template.prototype = {
+	__class__: erazor.macro.Template
+}
+var HTMLView = function() {
+	erazor.macro.Template.call(this);
+};
+HTMLView.__name__ = true;
+HTMLView.__super__ = erazor.macro.Template;
+HTMLView.prototype = $extend(erazor.macro.Template.prototype,{
+	execute: function(__context__) {
+		var __b__ = new StringBuf();
+		__b__.b += Std.string("\n\t<style>");
+		__b__.b += Std.string(__context__.style);
+		__b__.b += Std.string("</style>\n\t<div id='spritetest'>\n\t");
+		var _g = 0, _g1 = __context__.sprites;
+		while(_g < _g1.length) {
+			var sprite = _g1[_g];
+			++_g;
+			__b__.b += Std.string("\n\t\t");
+			var _g2 = 0, _g3 = sprite.children;
+			while(_g2 < _g3.length) {
+				var child = _g3[_g2];
+				++_g2;
+				__b__.b += Std.string("\n\t\t\t");
+				if(child.state == __context__.states[0]) {
+					__b__.b += Std.string("\n\t\t\t<div class='");
+					__b__.b += Std.string(sprite.name);
+					__b__.b += Std.string(" ");
+					__b__.b += Std.string(child.name);
+					__b__.b += Std.string("'></div>\n\t\t\t");
+					null;
+				}
+				__b__.b += Std.string("\n\t\t");
+				null;
+			}
+			__b__.b += Std.string("\n\t\t\n\t");
+			null;
+		}
+		__b__.b += Std.string("\n\t</div>");
+		return __b__.b;
+	}
+	,__class__: HTMLView
+});
+var CSSView = function() {
+	erazor.macro.Template.call(this);
+};
+CSSView.__name__ = true;
+CSSView.__super__ = erazor.macro.Template;
+CSSView.prototype = $extend(erazor.macro.Template.prototype,{
+	execute: function(__context__) {
+		var __b__ = new StringBuf();
+		__b__.b += Std.string("\n\t.");
+		__b__.b += Std.string(__context__.spritename);
+		__b__.b += Std.string(" { display:block; text-indent:-9999px;}\n\t");
+		var _g = 0, _g1 = __context__.sprites;
+		while(_g < _g1.length) {
+			var sprite = _g1[_g];
+			++_g;
+			__b__.b += Std.string("\n\t\t\t\t.");
+			__b__.b += Std.string(sprite.name);
+			__b__.b += Std.string("{ \n\t\t\t\t\t\tbackground-image:url('");
+			__b__.b += Std.string(sprite.url);
+			__b__.b += Std.string("');\n\t\t\t\t\t\twidth:");
+			__b__.b += Std.string(sprite.width);
+			__b__.b += Std.string("px;\n\t\t\t\t\t\theight:");
+			__b__.b += Std.string(sprite.height);
+			__b__.b += Std.string("px;\n\t\t\t\t\t}\n\t\t\t\t");
+			var _g2 = 0, _g3 = sprite.children;
+			while(_g2 < _g3.length) {
+				var child = _g3[_g2];
+				++_g2;
+				__b__.b += Std.string("\n\t\t\t\t\t");
+				if(child.state == __context__.states[0]) {
+					__b__.b += Std.string("\n\n\t\t\t\t\t.");
+					__b__.b += Std.string(sprite.name);
+					__b__.b += Std.string(".");
+					__b__.b += Std.string(child.name);
+					__b__.b += Std.string("{\n\t\t\t\t\t\tbackground-image:url('");
+					__b__.b += Std.string(sprite.url);
+					__b__.b += Std.string("');\n\t\t\t\t\t\tbackground-position:");
+					__b__.b += Std.string(child.x);
+					__b__.b += Std.string("px ");
+					__b__.b += Std.string(child.y);
+					__b__.b += Std.string("px;\n\t\t\t\t\t\twidth:");
+					__b__.b += Std.string(child.width);
+					__b__.b += Std.string("px;\n\t\t\t\t\t\theight:");
+					__b__.b += Std.string(child.height);
+					__b__.b += Std.string("px;\n\t\t\t\t\t}\n\t\t\t\t\t");
+					null;
+				} else {
+					__b__.b += Std.string("\n\t\t\t\t\t\t\n\t\t\t\t\t\t.");
+					__b__.b += Std.string(sprite.name);
+					__b__.b += Std.string(".");
+					__b__.b += Std.string(child.name);
+					__b__.b += Std.string(":");
+					__b__.b += Std.string(__context__.states[1]);
+					__b__.b += Std.string("{\n\t\t\t\t\t\tbackground-image:url('");
+					__b__.b += Std.string(sprite.url);
+					__b__.b += Std.string("');\n\t\t\t\t\t\tbackground-position:");
+					__b__.b += Std.string(child.x);
+					__b__.b += Std.string("px ");
+					__b__.b += Std.string(child.y);
+					__b__.b += Std.string("px;\n\t\t\t\t\t\twidth:");
+					__b__.b += Std.string(child.width);
+					__b__.b += Std.string("px;\n\t\t\t\t\t\theight:");
+					__b__.b += Std.string(child.height);
+					__b__.b += Std.string("px;\n\t\t\t\t\t}\n\t\t\t\t\t");
+					null;
+				}
+				__b__.b += Std.string("\n\t\t\t\t");
+				null;
+			}
+			__b__.b += Std.string("\t\n\t\t\t\t\t\n\t\t\t\t");
+			null;
+		}
+		__b__.b += Std.string("\n\t\t\n\t\t\t ");
+		return __b__.b;
+	}
+	,__class__: CSSView
+});
 var Std = function() { }
 Std.__name__ = true;
 Std.string = function(s) {
 	return js.Boot.__string_rec(s,"");
+}
+var StringBuf = function() {
+	this.b = "";
+};
+StringBuf.__name__ = true;
+StringBuf.prototype = {
+	__class__: StringBuf
 }
 var js = js || {}
 js.Boot = function() { }
@@ -264,6 +420,48 @@ js.Boot.__string_rec = function(o,s) {
 		return String(o);
 	}
 }
+js.Boot.__interfLoop = function(cc,cl) {
+	if(cc == null) return false;
+	if(cc == cl) return true;
+	var intf = cc.__interfaces__;
+	if(intf != null) {
+		var _g1 = 0, _g = intf.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var i1 = intf[i];
+			if(i1 == cl || js.Boot.__interfLoop(i1,cl)) return true;
+		}
+	}
+	return js.Boot.__interfLoop(cc.__super__,cl);
+}
+js.Boot.__instanceof = function(o,cl) {
+	try {
+		if(o instanceof cl) {
+			if(cl == Array) return o.__enum__ == null;
+			return true;
+		}
+		if(js.Boot.__interfLoop(o.__class__,cl)) return true;
+	} catch( e ) {
+		if(cl == null) return false;
+	}
+	switch(cl) {
+	case Int:
+		return Math.ceil(o%2147483648.0) === o;
+	case Float:
+		return typeof(o) == "number";
+	case Bool:
+		return o === true || o === false;
+	case String:
+		return typeof(o) == "string";
+	case Dynamic:
+		return true;
+	default:
+		if(o == null) return false;
+		if(cl == Class && o.__name__ != null) return true; else null;
+		if(cl == Enum && o.__ename__ != null) return true; else null;
+		return o.__enum__ == cl;
+	}
+}
 js.Lib = function() { }
 js.Lib.__name__ = true;
 js.Lib.alert = function(v) {
@@ -279,8 +477,18 @@ Math.isFinite = function(i) {
 Math.isNaN = function(i) {
 	return isNaN(i);
 };
+String.prototype.__class__ = String;
 String.__name__ = true;
+Array.prototype.__class__ = Array;
 Array.__name__ = true;
+var Int = { __name__ : ["Int"]};
+var Dynamic = { __name__ : ["Dynamic"]};
+var Float = Number;
+Float.__name__ = ["Float"];
+var Bool = Boolean;
+Bool.__ename__ = ["Bool"];
+var Class = { __name__ : ["Class"]};
+var Enum = { };
 if(typeof document != "undefined") js.Lib.document = document;
 if(typeof window != "undefined") {
 	js.Lib.window = window;

@@ -1,5 +1,6 @@
 
 -main ExportSprite
 -cp JSFexterns
+-lib erazorGit
 --dead-code-elimination
 -js test.jsf

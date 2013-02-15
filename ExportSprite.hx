@@ -61,7 +61,8 @@ class ExportSprite
 
 	var dir:String;
 	var filePath:String;
-
+	var sprites:Array<Sprite>;
+	var states:Array<String>;
 	public function new()
 	{
 
@@ -69,6 +70,9 @@ class ExportSprite
 		sel=Fw.selection; // saved selection
 		//try{
 		export();
+		exportHtml();
+		//exportLess();
+		//exportCSS();
 		//}catch(e:Dynamic){
 			//Lib.alert([e.lineNumber, e, e.fileName]);
 		//}
@@ -171,14 +175,14 @@ class ExportSprite
 			}
 			sliceCount++;
 		}
-		trace("end PrseSlice");
+		trace("end ParseSlice");
 
 	}
 
 	function generateSpriteData() 
 	{
 		trace("generateSpriteData");
-		var sprites = new Array<Sprite>();
+		 sprites = new Array<Sprite>();
 		// Create combined sprite image(s) and export them
 		if(multiSprites){
 
@@ -212,7 +216,7 @@ class ExportSprite
 				// Export resulting image and return to doc
 				Fw.getDocumentDOM().setExportOptions(dom.exportOptions);
 				Fw.exportDocumentAs(Fw.getDocumentDOM(), dir + "/" + file.name, file.exportOptions);
-				Fw.getDocumentDOM().close(false);
+				//Fw.getDocumentDOM().close(false);
 		}//end  separate file loop
 
 		//if !multisprites
@@ -220,7 +224,13 @@ class ExportSprite
 
 			var totalWidth:Float = 0; 
 			var totalHeight:Float = 0;
-
+			
+			if (dom.frames.length>1){
+				states=new Array();
+				for (frame in dom.frames){
+					states.push(frame.name);
+				}
+			}
 			for(slice in sliceFiles){
 				totalWidth += Math.ceil(slice.width);
 				totalHeight = Math.max(slice.height * slice.frames.length, totalHeight);
@@ -267,6 +277,7 @@ class ExportSprite
 					return Lib.alert("There is only one slice and one state; cannot continue. This command is used to export slices and states into a single sprite image. You must select more than one slice or have multiple states in the document.");
 				}else if(dom.frames.length>1){
 					multiSprites = (Fw.yesNoDialog("Multiple slices are selected. Press YES to export all slices to a single sprite sheet image, press NO to export each slice as a separate sprite image.")==null);
+					
 				}
 		
 		}else if(slices.length>1){
@@ -274,6 +285,8 @@ class ExportSprite
 				if(untyped(confirm("This page has only one state; slices will be merged into a single sprite image.")==null))
 				return;
 			}else{
+				//genarates multiple files if true
+				//todo add Choice
 			multiSprites = false;
 			}
 		}	
@@ -322,6 +335,55 @@ class ExportSprite
 	}
 		return;
 	}
+	function exportHtml(){
+
+
+	// 	var html = "";
+	// if(multiSprites)
+	// 	html += "<div id='" + containerID + "'>";
+	// for(var i = 0; i < sprites.length; i++){
+	// 	if(!multiSprites){
+	// 		if(html.length)
+	// 			html += "\n";
+	// 		html += "<div id='" + sprites[i].name + "'>";
+	// 	}
+	// 	for(var j = 0; j < sprites[i].children.length; j++){
+	// 		if(sprites[i].children[j].index == 0)
+	// 			html += "\n\t<" + ITEM_TAG + " "
+	// 				 + "href='#' " // TODO: use slice links
+	// 				 + "class='" + sprites[i].children[j].name + "'"
+	// 				 + ">" + sprites[i].children[j].name
+	// 				 + "</" + ITEM_TAG + ">";
+	// 	}
+	// 	if(!multiSprites)
+	// 		html += "\n</div>";
+	// }
+	// if(multiSprites)
+	// 	html += "\n</div>";
+
+
+
+
+		var view =new HTMLView().execute({states:states,sprites:sprites,style:exportCSS()});
+		dom.clipCopyJsToExecute(view);
+		Lib.alert(view);
+	}
+	function exportLess(){
+	
+		var view =new LESSView().execute({states:states,spritename:"picto",sprites:sprites});
+		Lib.alert(view);
+	}
+	function exportCSS():String{
+		var view =new CSSView().execute({states:states,spritename:"picto",sprites:sprites});
+		return view;
+	}
+
+
+	function renderSpriteNameforHss(spriteData, stateData){
+		// example: #nav a:hover.homeBtn
+		return ((stateData!=null) ? "" + stateData.name : "")
+			+ (stateData && stateData.index > 0 ? "-" + stateData.state : "");
+	}
 
 	public static function main(){
 
@@ -329,3 +391,81 @@ class ExportSprite
 		
 	}
 }
+@:template("
+	<style>@style</style>
+	<div id='spritetest'>
+	@for (sprite in sprites){
+		@for(child in sprite.children){
+			@if(child.state==states[0]){
+			<div class='@sprite.name @child.name'></div>
+			}
+		}
+		
+	}
+	</div>")
+class HTMLView extends erazor.macro.Template<{states:Array<String>,sprites:Array<Sprite>,style:String}>{}
+
+
+@:template("
+	.@spritename { display:block; text-indent:-9999px;}
+	@for(sprite in sprites){
+				.@sprite.name{ 
+						background-image:url('@sprite.url');
+						width:@(sprite.width)px;
+						height:@(sprite.height)px;
+					}
+				@for(child in sprite.children){
+					@if(child.state==states[0]){
+
+					.@sprite.name.@child.name{
+						background-image:url('@sprite.url');
+						background-position:@(child.x)px @(child.y)px;
+						width:@(child.width)px;
+						height:@(child.height)px;
+					}
+					}else{
+						
+						.@sprite.name.@child.name:@states[1]{
+						background-image:url('@sprite.url');
+						background-position:@(child.x)px @(child.y)px;
+						width:@(child.width)px;
+						height:@(child.height)px;
+					}
+					}
+				}	
+					
+				}
+		
+			 ")
+class CSSView extends erazor.macro.Template<{states:Array<String>,spritename:String,sprites:Array<Sprite>}>{}
+
+@:template("
+	.@spritename { display:block; text-indent:-9999px;}
+	@for(sprite in sprites){
+				.@sprite.name{ 
+						background-image:url('@sprite.url');
+						width:@(sprite.width)px;
+						height:@(sprite.height)px;
+					
+				@for(child in sprite.children){
+					@if(child.state==states[0]){				
+					 .@child.name @{'{';}
+					 	background-position:@(child.x)px @(child.y)px;
+					 	width:@(child.width)px;
+					 	height:@(child.height)px;
+					}else{
+					 	& :@child.state{
+					 		background-position:@(child.x)px @(child.y)px;
+					 		width:@(child.width)px;
+					 		height:@(child.height)px;
+					 	}
+					 @{'}';}
+					}
+				}	
+					
+				}
+			}
+		
+			 ")
+class LESSView extends erazor.macro.Template<{states:Array<String>,spritename:String,sprites:Array<Sprite>}>{}
+

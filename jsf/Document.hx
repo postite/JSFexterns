@@ -209,7 +209,10 @@ public function clearJPEGMask()
 public function clipCopy()
 public function clipCopyAsPaths()
 public function clipCopyFormats()
-public function clipCopyJsToExecute()
+*/
+
+public function clipCopyJsToExecute(string:String):Void;
+/*
 public function clipCut()
 public function clipPaste()
 public function clipPasteAsMask()
