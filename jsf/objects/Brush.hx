@@ -1,4 +1,4 @@
-package jsf;
+package jsf.objects;
 
 typedef Brush={
 

@@ -17,11 +17,11 @@ package;
 import js.Lib;
 import jsf.Fw;
 import jsf.Document;
-import jsf.Element;
-import jsf.SliceHotSpot;
+import jsf.objects.elements.Element;
+import jsf.objects.elements.SliceHotSpot;
 import jsf.core.Files;
-import jsf.ExportOptions;
-import jsf.Frame;
+import jsf.objects.ExportOptions;
+import jsf.objects.Frame;
 
 ///wich native Type ?
 typedef File={
@@ -29,7 +29,7 @@ typedef File={
 	name : String, 
 	height : Float, 
 	frames : Array<String>,
-	exportOptions : jsf.ExportOptions
+	exportOptions : ExportOptions
 }
 typedef SpriteChildren={
 	name:String,

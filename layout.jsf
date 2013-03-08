@@ -1,0 +1,2119 @@
+var EReg = function(r,opt) {
+	opt = opt.split("u").join("");
+	this.r = new RegExp(r,opt);
+};
+EReg.__name__ = true;
+EReg.prototype = {
+	replace: function(s,by) {
+		return s.replace(this.r,by);
+	}
+	,matched: function(n) {
+		return this.r.m != null && n >= 0 && n < this.r.m.length?this.r.m[n]:(function($this) {
+			var $r;
+			throw "EReg::matched";
+			return $r;
+		}(this));
+	}
+	,match: function(s) {
+		if(this.r.global) this.r.lastIndex = 0;
+		this.r.m = this.r.exec(s);
+		this.r.s = s;
+		return this.r.m != null;
+	}
+	,__class__: EReg
+}
+var Hash = function() {
+	this.h = { };
+};
+Hash.__name__ = true;
+Hash.prototype = {
+	keys: function() {
+		var a = [];
+		for( var key in this.h ) {
+		if(this.h.hasOwnProperty(key)) a.push(key.substr(1));
+		}
+		return HxOverrides.iter(a);
+	}
+	,exists: function(key) {
+		return this.h.hasOwnProperty("$" + key);
+	}
+	,get: function(key) {
+		return this.h["$" + key];
+	}
+	,set: function(key,value) {
+		this.h["$" + key] = value;
+	}
+	,__class__: Hash
+}
+var HxOverrides = function() { }
+HxOverrides.__name__ = true;
+HxOverrides.substr = function(s,pos,len) {
+	if(pos != null && pos != 0 && len != null && len < 0) return "";
+	if(len == null) len = s.length;
+	if(pos < 0) {
+		pos = s.length + pos;
+		if(pos < 0) pos = 0;
+	} else if(len < 0) len = s.length + len - pos;
+	return s.substr(pos,len);
+}
+HxOverrides.remove = function(a,obj) {
+	var i = 0;
+	var l = a.length;
+	while(i < l) {
+		if(a[i] == obj) {
+			a.splice(i,1);
+			return true;
+		}
+		i++;
+	}
+	return false;
+}
+HxOverrides.iter = function(a) {
+	return { cur : 0, arr : a, hasNext : function() {
+		return this.cur < this.arr.length;
+	}, next : function() {
+		return this.arr[this.cur++];
+	}};
+}
+var IntHash = function() {
+	this.h = { };
+};
+IntHash.__name__ = true;
+IntHash.prototype = {
+	get: function(key) {
+		return this.h[key];
+	}
+	,set: function(key,value) {
+		this.h[key] = value;
+	}
+	,__class__: IntHash
+}
+var Lambda = function() { }
+Lambda.__name__ = true;
+Lambda.list = function(it) {
+	var l = new List();
+	var $it0 = $iterator(it)();
+	while( $it0.hasNext() ) {
+		var i = $it0.next();
+		l.add(i);
+	}
+	return l;
+}
+var Layout = function() {
+	this.fluid = true;
+	this.dom = fw.getDocumentDOM();
+	this.dir = fw.browseForFolderURL("Select export directory for  images",Files.getDirectory(this.dom.lastExportFile) != null?Files.getDirectory(this.dom.lastExportFile):Files.getDirectory(this.dom.lastExportFile));
+	this.parseSlice(true);
+};
+Layout.__name__ = true;
+Layout.main = function() {
+	var app = new Layout();
+}
+Layout.prototype = {
+	toHtml: function(tree) {
+		var xml = Xml.createElement("div");
+		xml.set("class",tree.val.name);
+		var outXml = this.htmlrecurse(tree,xml);
+		console.log(outXml.toString());
+		this.dom.pngText.HTML = outXml.toString();
+		console.log("after dom.pngText");
+		return "pol";
+	}
+	,getTextTag: function(text) {
+		var textname = text.name;
+		var tags = new EReg("^<(a|blockquote|div|h1|h2|h3|h4|h5|h6|label|p|span)>","");
+		if(tags.match(textname)) {
+			var name = tags.replace(textname,"");
+			var tag = tags.matched(0);
+			var tagName = tags.matched(1);
+			return { name : name, tag : tag, tagName : tagName};
+		}
+		return { name : textname, tag : "<p>", tagName : "p"};
+	}
+	,generateExport: function(hot) {
+		var typedElement = this.checkZoneType(hot);
+		if(typedElement == null) return Xml.createElement("pif");
+		console.log(typedElement.type);
+		var xml;
+		switch(typedElement.type) {
+		case "text":
+			var textelem = typedElement.element;
+			var tag = this.getTextTag(textelem);
+			xml = Xml.parse("<" + tag.tagName + ">" + textelem.textChars + "</" + tag.tagName + ">");
+			var style = jsfTools.exp.CSS.cssFromTextObject(textelem);
+			xml.firstElement().set("style",style);
+			return xml;
+		case "image":
+			var hotelem = typedElement.element;
+			xml = Xml.parse("<img src=\"" + this.generateImage(hotelem) + "\"/>");
+			return xml;
+		default:
+			xml = Xml.parse("<div>paf</div>");
+			return xml;
+		}
+	}
+	,htmlrecurse: function(tree,xml) {
+		var $it0 = tree.childIterator();
+		while( $it0.hasNext() ) {
+			var node = $it0.next();
+			var _node = Xml.createElement("div");
+			var treenode = tree.find(node);
+			if(treenode.parent.val.color == "#00ffff") _node.set("class",this.calculeSpanWidth(node,_node,treenode.parent.val));
+			if(node.color == "#00ffff") _node.set("class",this.fluid?"row-fluid":"row");
+			if(treenode.parent.val.color != "#00ffff" && node.color != "#00ffff") {
+				_node.set("class","_" + node.color + " " + node.name);
+				if(treenode.children != null && treenode.children.val.color == "#00ffff") {
+				} else {
+				}
+				_node.set("style","width:" + Math.round(node.width) + "px;height:" + Math.round(node.height) + "px;background:" + node.color);
+			}
+			xml.addChild(_node);
+			if(treenode.children != null) this.htmlrecurse(treenode,_node); else {
+				var exportXml = this.generateExport(node);
+				_node.addChild(exportXml);
+			}
+		}
+		return xml;
+	}
+	,calculeSpanWidth: function(spot,node,parentSpot) {
+		var spanW = 60;
+		var gridW = 960;
+		var margin = 24;
+		var spotW = spot.width;
+		var ratio = Math.ceil(spotW / (spanW + margin));
+		if(spot.width >= spanW && parentSpot.color == "#00ffff") return "span" + ratio;
+		var relativeBounds = this.globalToLocal(spot.pixelRect,parentSpot.pixelRect);
+		console.log("relativeBounds=" + Std.string(relativeBounds));
+		node.set("style","width:" + Math.round(spot.width) + "px;\n\t\t\theight:" + Math.round(spot.height) + "px;\n\t\t\tbackground:" + spot.color + ";\n\t\t\ttop:" + relativeBounds.top + "px;\n\t\t\tright:" + relativeBounds.right + "px;\n\t\t\tbottom:" + relativeBounds.bottom + "px;\n\t\t\tleft:" + relativeBounds.left + "px;\n\t\t\tposition:absolute;");
+		return "petit";
+	}
+	,globalToLocal: function(local,relative) {
+		var bounds = ["top","right","bottom","left"];
+		var localized = { };
+		var _g = 0;
+		while(_g < bounds.length) {
+			var dir = bounds[_g];
+			++_g;
+			var propL = Reflect.field(local,dir);
+			var propR = Reflect.field(relative,dir);
+			var newvalue = propL - propR;
+			localized[dir] = newvalue;
+		}
+		return localized;
+	}
+	,exportTree: function(tree) {
+		this.toHtml(tree.children);
+	}
+	,trieHots: function(h1,h2) {
+		var Rect = h1.pixelRect;
+		var R2 = h2.pixelRect;
+		Rect.width = Rect.right - Rect.left;
+		Rect.height = Rect.bottom - Rect.top;
+		R2.width = R2.right - R2.left;
+		R2.height = R2.bottom - R2.top;
+		return Rect.width - R2.width | 0;
+	}
+	,imbriqueReq: function(big,tree,liste) {
+		var cont = new de.polygonal.ds.TreeNode(big);
+		var $it0 = liste.iterator();
+		while( $it0.hasNext() ) {
+			var minus = $it0.next();
+			var min = new de.polygonal.ds.TreeNode(minus);
+			this.ignoreMap.hash.set((function($this) {
+				var $r;
+				if(big.___id___ == null) {
+					big.___id___ = ObjectHash.nextObjectID++;
+					if(ObjectHash.nextObjectID == 2147483647) ObjectHash.nextObjectID = 0;
+				}
+				$r = big.___id___;
+				return $r;
+			}(this)),true);
+			if(this.overlaps(big.pixelRect,minus.pixelRect)) {
+				if(this.containers.hash.get((function($this) {
+					var $r;
+					if(minus.___id___ == null) {
+						minus.___id___ = ObjectHash.nextObjectID++;
+						if(ObjectHash.nextObjectID == 2147483647) ObjectHash.nextObjectID = 0;
+					}
+					$r = minus.___id___;
+					return $r;
+				}(this)))) {
+					var dep = tree.find(minus);
+					cont.appendNode(dep);
+					this.containers.hash.set((function($this) {
+						var $r;
+						if(big.___id___ == null) {
+							big.___id___ = ObjectHash.nextObjectID++;
+							if(ObjectHash.nextObjectID == 2147483647) ObjectHash.nextObjectID = 0;
+						}
+						$r = big.___id___;
+						return $r;
+					}(this)),true);
+					this.ignoreMap.hash.set((function($this) {
+						var $r;
+						if(minus.___id___ == null) {
+							minus.___id___ = ObjectHash.nextObjectID++;
+							if(ObjectHash.nextObjectID == 2147483647) ObjectHash.nextObjectID = 0;
+						}
+						$r = minus.___id___;
+						return $r;
+					}(this)),true);
+					liste.remove(minus);
+					continue;
+				}
+				if(!this.inTree.hash.get((function($this) {
+					var $r;
+					if(big.___id___ == null) {
+						big.___id___ = ObjectHash.nextObjectID++;
+						if(ObjectHash.nextObjectID == 2147483647) ObjectHash.nextObjectID = 0;
+					}
+					$r = big.___id___;
+					return $r;
+				}(this)))) {
+					tree.appendNode(cont);
+					this.inTree.hash.set((function($this) {
+						var $r;
+						if(big.___id___ == null) {
+							big.___id___ = ObjectHash.nextObjectID++;
+							if(ObjectHash.nextObjectID == 2147483647) ObjectHash.nextObjectID = 0;
+						}
+						$r = big.___id___;
+						return $r;
+					}(this)),true);
+				}
+				this.containers.hash.set((function($this) {
+					var $r;
+					if(big.___id___ == null) {
+						big.___id___ = ObjectHash.nextObjectID++;
+						if(ObjectHash.nextObjectID == 2147483647) ObjectHash.nextObjectID = 0;
+					}
+					$r = big.___id___;
+					return $r;
+				}(this)),true);
+				this.ignoreMap.hash.set((function($this) {
+					var $r;
+					if(big.___id___ == null) {
+						big.___id___ = ObjectHash.nextObjectID++;
+						if(ObjectHash.nextObjectID == 2147483647) ObjectHash.nextObjectID = 0;
+					}
+					$r = big.___id___;
+					return $r;
+				}(this)),false);
+				if(!this.contained.hash.get((function($this) {
+					var $r;
+					if(minus.___id___ == null) {
+						minus.___id___ = ObjectHash.nextObjectID++;
+						if(ObjectHash.nextObjectID == 2147483647) ObjectHash.nextObjectID = 0;
+					}
+					$r = minus.___id___;
+					return $r;
+				}(this)))) {
+					cont.appendNode(min);
+					this.contained.hash.set((function($this) {
+						var $r;
+						if(minus.___id___ == null) {
+							minus.___id___ = ObjectHash.nextObjectID++;
+							if(ObjectHash.nextObjectID == 2147483647) ObjectHash.nextObjectID = 0;
+						}
+						$r = minus.___id___;
+						return $r;
+					}(this)),true);
+					this.ignoreMap.hash.set((function($this) {
+						var $r;
+						if(minus.___id___ == null) {
+							minus.___id___ = ObjectHash.nextObjectID++;
+							if(ObjectHash.nextObjectID == 2147483647) ObjectHash.nextObjectID = 0;
+						}
+						$r = minus.___id___;
+						return $r;
+					}(this)),true);
+				}
+			}
+			if(!this.ignoreMap.hash.get((function($this) {
+				var $r;
+				if(minus.___id___ == null) {
+					minus.___id___ = ObjectHash.nextObjectID++;
+					if(ObjectHash.nextObjectID == 2147483647) ObjectHash.nextObjectID = 0;
+				}
+				$r = minus.___id___;
+				return $r;
+			}(this)))) this.imbriqueReq(minus,tree,liste);
+		}
+	}
+	,imbriqueWrap: function() {
+		this.ignoreMap = new ObjectHash();
+		this.contained = new ObjectHash();
+		this.containers = new ObjectHash();
+		this.inTree = new ObjectHash();
+		var liste = Lambda.list(this.hots);
+		var tree = new de.polygonal.ds.TreeNode(null);
+		console.log(liste.last().width);
+		var builder = new de.polygonal.ds.TreeBuilder(tree);
+		this.imbriqueReq(liste.first(),tree,liste);
+		return tree;
+	}
+	,Xsorting: function(a,b) {
+		var xPos = a.pixelRect.left - b.pixelRect.left | 0;
+		var yPos = a.pixelRect.top - b.pixelRect.top | 0;
+		if(Math.abs(yPos) < 10) return xPos;
+		if(Math.abs(xPos) < 10) return yPos;
+		return 0;
+	}
+	,traverse: function(a,dy) {
+		if(a.val != null) a.sort($bind(this,this.Xsorting));
+		return true;
+	}
+	,parseSlice: function(gen) {
+		this.exportables = new Array();
+		this.hots = new Array();
+		var allSlices = new Array();
+		var _g = 0, _g1 = this.dom.topLayers;
+		while(_g < _g1.length) {
+			var layer = _g1[_g];
+			++_g;
+			if(layer.layerType == "web") {
+				var elements = layer.frames[0].elemsandsublayers;
+				var _g2 = 0;
+				while(_g2 < elements.length) {
+					var el = elements[_g2];
+					++_g2;
+					if(this.match(el,"Hotspot")) {
+						var HS = el;
+						var color = HS.color;
+						var t = { left : 41, top : 49, right : 180, bottom : 180};
+						this.hots.push(HS);
+					}
+					if(el.sliceID != null) {
+						var slice = el;
+						var source = "";
+						if(slice.sliceKind == "image") {
+							if(gen) source = this.generateImage(slice); else source = "";
+						}
+						this.exportables.push({ name : slice.baseName, fileName : slice.baseName + ".png", width : slice.width, height : slice.height, content : slice.htmlText});
+						allSlices.push(slice);
+					}
+					if(el.isLayer) {
+						var sub = el;
+						var _g3 = 0, _g4 = sub.elems;
+						while(_g3 < _g4.length) {
+							var subel = _g4[_g3];
+							++_g3;
+							if(subel.sliceID != null) {
+								var slice = subel;
+								var source = "";
+								if(slice.sliceKind == "image") {
+									if(gen) source = this.generateImage(slice); else source = "";
+								}
+								this.exportables.push({ name : slice.baseName, fileName : slice.baseName + ".png", width : slice.width, height : slice.height, content : slice.htmlText});
+								allSlices.push(slice);
+							}
+						}
+					}
+				}
+			}
+		}
+		this.hots.sort($bind(this,this.trieHots));
+		var _g = 0, _g1 = this.hots;
+		while(_g < _g1.length) {
+			var h = _g1[_g];
+			++_g;
+		}
+		var tree = this.imbriqueWrap();
+		tree.postorder($bind(this,this.traverse));
+		this.exportTree(tree);
+	}
+	,doSelectSimilar: function(elem,hot) {
+		if(this.overlaps(hot.pixelRect,elem.pixelRect)) return true;
+		return false;
+	}
+	,checkZoneType: function(slice) {
+		if(slice == null) slice = fw.selection[0];
+		var _g = 0, _g1 = this.dom.layers;
+		while(_g < _g1.length) {
+			var l = _g1[_g];
+			++_g;
+			if(l.layerType != "web") {
+				var _g2 = 0, _g3 = l.frames[this.dom.currentFrameNum].elements;
+				while(_g2 < _g3.length) {
+					var e = _g3[_g2];
+					++_g2;
+					var elem = e;
+					if(this.doSelectSimilar(elem,slice)) {
+						if(this.match(elem,"Text")) {
+							var textElem = elem;
+							console.log(textElem.textChars);
+							return { type : "text", element : textElem};
+						}
+						if(this.match(elem,"Image")) return { type : "image", element : elem};
+					} else continue;
+				}
+			}
+		}
+		return null;
+	}
+	,generateImage: function(slice) {
+		var opts = { };
+		opts.exportFormat = "PNG";
+		opts.colorMode = "32 bit";
+		opts.optimized = true;
+		opts.crop = true;
+		opts.cropLeft = slice.left - this.dom.left;
+		opts.cropRight = slice.left + slice.width - this.dom.left;
+		opts.cropTop = slice.top - this.dom.top;
+		opts.cropBottom = slice.top + slice.height - this.dom.top;
+		var tmp = this.dir + "/" + slice.name + ".png";
+		console.log("export=" + Std.string(fw.exportDocumentAs(this.dom,tmp,opts)));
+		return slice.name + ".png";
+	}
+	,match: function(elem,obj) {
+		this.r = new EReg("(object) ([a-zA-Z0-9_]+)","");
+		var str = Std.string(elem);
+		this.r.match(str);
+		if(this.r.matched(2) == obj) return true;
+		return false;
+	}
+	,overlaps: function(Rect,R2) {
+		return Rect.right > R2.right && Rect.left < R2.left && Rect.bottom > R2.bottom && Rect.top < R2.top;
+	}
+	,__class__: Layout
+}
+var List = function() {
+	this.length = 0;
+};
+List.__name__ = true;
+List.prototype = {
+	iterator: function() {
+		return { h : this.h, hasNext : function() {
+			return this.h != null;
+		}, next : function() {
+			if(this.h == null) return null;
+			var x = this.h[0];
+			this.h = this.h[1];
+			return x;
+		}};
+	}
+	,remove: function(v) {
+		var prev = null;
+		var l = this.h;
+		while(l != null) {
+			if(l[0] == v) {
+				if(prev == null) this.h = l[1]; else prev[1] = l[1];
+				if(this.q == l) this.q = prev;
+				this.length--;
+				return true;
+			}
+			prev = l;
+			l = l[1];
+		}
+		return false;
+	}
+	,last: function() {
+		return this.q == null?null:this.q[0];
+	}
+	,first: function() {
+		return this.h == null?null:this.h[0];
+	}
+	,add: function(item) {
+		var x = [item];
+		if(this.h == null) this.h = x; else this.q[1] = x;
+		this.q = x;
+		this.length++;
+	}
+	,__class__: List
+}
+var ObjectHash = function() {
+	this.hash = new IntHash();
+};
+ObjectHash.__name__ = true;
+ObjectHash.prototype = {
+	__class__: ObjectHash
+}
+var Reflect = function() { }
+Reflect.__name__ = true;
+Reflect.field = function(o,field) {
+	var v = null;
+	try {
+		v = o[field];
+	} catch( e ) {
+	}
+	return v;
+}
+var Std = function() { }
+Std.__name__ = true;
+Std.string = function(s) {
+	return js.Boot.__string_rec(s,"");
+}
+var StringBuf = function() {
+	this.b = "";
+};
+StringBuf.__name__ = true;
+StringBuf.prototype = {
+	__class__: StringBuf
+}
+var StringTools = function() { }
+StringTools.__name__ = true;
+StringTools.replace = function(s,sub,by) {
+	return s.split(sub).join(by);
+}
+var Xml = function() {
+};
+Xml.__name__ = true;
+Xml.parse = function(str) {
+	return haxe.xml.Parser.parse(str);
+}
+Xml.createElement = function(name) {
+	var r = new Xml();
+	r.nodeType = Xml.Element;
+	r._children = new Array();
+	r._attributes = new Hash();
+	r.setNodeName(name);
+	return r;
+}
+Xml.createPCData = function(data) {
+	var r = new Xml();
+	r.nodeType = Xml.PCData;
+	r.setNodeValue(data);
+	return r;
+}
+Xml.createCData = function(data) {
+	var r = new Xml();
+	r.nodeType = Xml.CData;
+	r.setNodeValue(data);
+	return r;
+}
+Xml.createComment = function(data) {
+	var r = new Xml();
+	r.nodeType = Xml.Comment;
+	r.setNodeValue(data);
+	return r;
+}
+Xml.createDocType = function(data) {
+	var r = new Xml();
+	r.nodeType = Xml.DocType;
+	r.setNodeValue(data);
+	return r;
+}
+Xml.createProlog = function(data) {
+	var r = new Xml();
+	r.nodeType = Xml.Prolog;
+	r.setNodeValue(data);
+	return r;
+}
+Xml.createDocument = function() {
+	var r = new Xml();
+	r.nodeType = Xml.Document;
+	r._children = new Array();
+	return r;
+}
+Xml.prototype = {
+	toString: function() {
+		if(this.nodeType == Xml.PCData) return this._nodeValue;
+		if(this.nodeType == Xml.CData) return "<![CDATA[" + this._nodeValue + "]]>";
+		if(this.nodeType == Xml.Comment) return "<!--" + this._nodeValue + "-->";
+		if(this.nodeType == Xml.DocType) return "<!DOCTYPE " + this._nodeValue + ">";
+		if(this.nodeType == Xml.Prolog) return "<?" + this._nodeValue + "?>";
+		var s = new StringBuf();
+		if(this.nodeType == Xml.Element) {
+			s.b += Std.string("<");
+			s.b += Std.string(this._nodeName);
+			var $it0 = this._attributes.keys();
+			while( $it0.hasNext() ) {
+				var k = $it0.next();
+				s.b += Std.string(" ");
+				s.b += Std.string(k);
+				s.b += Std.string("=\"");
+				s.b += Std.string(this._attributes.get(k));
+				s.b += Std.string("\"");
+			}
+			if(this._children.length == 0) {
+				s.b += Std.string("/>");
+				return s.b;
+			}
+			s.b += Std.string(">");
+		}
+		var $it1 = this.iterator();
+		while( $it1.hasNext() ) {
+			var x = $it1.next();
+			s.b += Std.string(x.toString());
+		}
+		if(this.nodeType == Xml.Element) {
+			s.b += Std.string("</");
+			s.b += Std.string(this._nodeName);
+			s.b += Std.string(">");
+		}
+		return s.b;
+	}
+	,addChild: function(x) {
+		if(this._children == null) throw "bad nodetype";
+		if(x._parent != null) HxOverrides.remove(x._parent._children,x);
+		x._parent = this;
+		this._children.push(x);
+	}
+	,firstElement: function() {
+		if(this._children == null) throw "bad nodetype";
+		var cur = 0;
+		var l = this._children.length;
+		while(cur < l) {
+			var n = this._children[cur];
+			if(n.nodeType == Xml.Element) return n;
+			cur++;
+		}
+		return null;
+	}
+	,iterator: function() {
+		if(this._children == null) throw "bad nodetype";
+		return { cur : 0, x : this._children, hasNext : function() {
+			return this.cur < this.x.length;
+		}, next : function() {
+			return this.x[this.cur++];
+		}};
+	}
+	,exists: function(att) {
+		if(this.nodeType != Xml.Element) throw "bad nodeType";
+		return this._attributes.exists(att);
+	}
+	,set: function(att,value) {
+		if(this.nodeType != Xml.Element) throw "bad nodeType";
+		this._attributes.set(att,value);
+	}
+	,getParent: function() {
+		return this._parent;
+	}
+	,setNodeValue: function(v) {
+		if(this.nodeType == Xml.Element || this.nodeType == Xml.Document) throw "bad nodeType";
+		return this._nodeValue = v;
+	}
+	,getNodeValue: function() {
+		if(this.nodeType == Xml.Element || this.nodeType == Xml.Document) throw "bad nodeType";
+		return this._nodeValue;
+	}
+	,setNodeName: function(n) {
+		if(this.nodeType != Xml.Element) throw "bad nodeType";
+		return this._nodeName = n;
+	}
+	,getNodeName: function() {
+		if(this.nodeType != Xml.Element) throw "bad nodeType";
+		return this._nodeName;
+	}
+	,__class__: Xml
+}
+var de = de || {}
+if(!de.polygonal) de.polygonal = {}
+if(!de.polygonal.ds) de.polygonal.ds = {}
+de.polygonal.ds.ArrayUtil = function() { }
+de.polygonal.ds.ArrayUtil.__name__ = true;
+de.polygonal.ds.ArrayUtil.alloc = function(x) {
+	var a;
+	a = new Array(x);
+	return a;
+}
+de.polygonal.ds.Cloneable = function() { }
+de.polygonal.ds.Cloneable.__name__ = true;
+de.polygonal.ds.Cloneable.prototype = {
+	__class__: de.polygonal.ds.Cloneable
+}
+de.polygonal.ds.Hashable = function() { }
+de.polygonal.ds.Hashable.__name__ = true;
+de.polygonal.ds.Hashable.prototype = {
+	__class__: de.polygonal.ds.Hashable
+}
+de.polygonal.ds.Collection = function() { }
+de.polygonal.ds.Collection.__name__ = true;
+de.polygonal.ds.Collection.__interfaces__ = [de.polygonal.ds.Hashable];
+de.polygonal.ds.Collection.prototype = {
+	__class__: de.polygonal.ds.Collection
+}
+de.polygonal.ds.Comparable = function() { }
+de.polygonal.ds.Comparable.__name__ = true;
+de.polygonal.ds.Comparable.prototype = {
+	__class__: de.polygonal.ds.Comparable
+}
+de.polygonal.ds.DA = function(reservedSize,maxSize) {
+	if(maxSize == null) maxSize = -1;
+	if(reservedSize == null) reservedSize = 0;
+	this._size = 0;
+	this._iterator = null;
+	this.maxSize = -1;
+	if(reservedSize > 0) this._a = de.polygonal.ds.ArrayUtil.alloc(reservedSize); else this._a = new Array();
+	this.key = de.polygonal.ds.HashKey._counter++;
+	this.reuseIterator = false;
+};
+de.polygonal.ds.DA.__name__ = true;
+de.polygonal.ds.DA.__interfaces__ = [de.polygonal.ds.Collection];
+de.polygonal.ds.DA.prototype = {
+	clone: function(assign,copier) {
+		if(assign == null) assign = true;
+		var copy = new de.polygonal.ds.DA(this._size,this.maxSize);
+		copy._size = this._size;
+		if(assign) {
+			var _g1 = 0, _g = this._size;
+			while(_g1 < _g) {
+				var i = _g1++;
+				copy._a[i] = this._a[i];
+			}
+		} else if(copier == null) {
+			var c = null;
+			var _g1 = 0, _g = this._size;
+			while(_g1 < _g) {
+				var i = _g1++;
+				c = js.Boot.__cast(this._a[i] , de.polygonal.ds.Cloneable);
+				copy._a[i] = c.clone();
+			}
+		} else {
+			var _g1 = 0, _g = this._size;
+			while(_g1 < _g) {
+				var i = _g1++;
+				copy._a[i] = copier(this._a[i]);
+			}
+		}
+		return copy;
+	}
+	,toDA: function() {
+		var a = new de.polygonal.ds.DA(this._size);
+		var _g1 = 0, _g = this._size;
+		while(_g1 < _g) {
+			var i = _g1++;
+			a.set(a._size,this._a[i]);
+		}
+		return a;
+	}
+	,toArray: function() {
+		var a = de.polygonal.ds.ArrayUtil.alloc(this._size);
+		var _g1 = 0, _g = this._size;
+		while(_g1 < _g) {
+			var i = _g1++;
+			a[i] = this._a[i];
+		}
+		return a;
+	}
+	,isEmpty: function() {
+		return this._size == 0;
+	}
+	,size: function() {
+		return this._size;
+	}
+	,iterator: function() {
+		if(this.reuseIterator) {
+			if(this._iterator == null) this._iterator = new de.polygonal.ds.DAIterator(this); else this._iterator.reset();
+			return this._iterator;
+		} else return new de.polygonal.ds.DAIterator(this);
+	}
+	,clear: function(purge) {
+		if(purge == null) purge = false;
+		if(purge) {
+			var NULL = null;
+			var _g1 = 0, _g = this._a.length;
+			while(_g1 < _g) {
+				var i = _g1++;
+				this._a[i] = NULL;
+			}
+		}
+		this._size = 0;
+	}
+	,remove: function(x) {
+		if(this._size == 0) return false;
+		var i = 0;
+		var s = this._size;
+		while(i < s) {
+			if(this._a[i] == x) {
+				s--;
+				var p = i;
+				while(p < s) {
+					this._a[p] = this._a[p + 1];
+					++p;
+				}
+				continue;
+			}
+			i++;
+		}
+		var found = this._size - s != 0;
+		this._size = s;
+		return found;
+	}
+	,contains: function(x) {
+		var found = false;
+		var _g1 = 0, _g = this._size;
+		while(_g1 < _g) {
+			var i = _g1++;
+			if(this._a[i] == x) {
+				found = true;
+				break;
+			}
+		}
+		return found;
+	}
+	,free: function() {
+		var NULL = null;
+		var _g1 = 0, _g = this._a.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			this._a[i] = NULL;
+		}
+		this._a = null;
+		this._iterator = null;
+	}
+	,removeAt: function(i) {
+		var x = this._a[i];
+		var k = this._size - 1;
+		var p = i;
+		while(p < k) this._a[p++] = this._a[p];
+		this._size--;
+		return x;
+	}
+	,set: function(i,x) {
+		this._a[i] = x;
+		if(i >= this._size) this._size++;
+	}
+	,__class__: de.polygonal.ds.DA
+}
+de.polygonal.ds.Itr = function() { }
+de.polygonal.ds.Itr.__name__ = true;
+de.polygonal.ds.Itr.prototype = {
+	__class__: de.polygonal.ds.Itr
+}
+de.polygonal.ds.DAIterator = function(f) {
+	this._f = f;
+	{
+		this._a = this._f._a;
+		this._s = this._f._size;
+		this._i = 0;
+		this;
+	}
+};
+de.polygonal.ds.DAIterator.__name__ = true;
+de.polygonal.ds.DAIterator.__interfaces__ = [de.polygonal.ds.Itr];
+de.polygonal.ds.DAIterator.prototype = {
+	remove: function() {
+		this._f.removeAt(--this._i);
+		this._s--;
+	}
+	,next: function() {
+		return this._a[this._i++];
+	}
+	,hasNext: function() {
+		return this._i < this._s;
+	}
+	,reset: function() {
+		this._a = this._f._a;
+		this._s = this._f._size;
+		this._i = 0;
+		return this;
+	}
+	,__class__: de.polygonal.ds.DAIterator
+}
+de.polygonal.ds.HashKey = function() { }
+de.polygonal.ds.HashKey.__name__ = true;
+de.polygonal.ds.TreeBuilder = function(node) {
+	this._node = node;
+	if(this._node != null) {
+		this._child = this._node.children;
+		true;
+	} else false;
+};
+de.polygonal.ds.TreeBuilder.__name__ = true;
+de.polygonal.ds.TreeBuilder.prototype = {
+	__class__: de.polygonal.ds.TreeBuilder
+}
+de.polygonal.ds.TreeNode = function(x,parent) {
+	this.val = x;
+	this.parent = parent;
+	this.children = null;
+	this.prev = null;
+	this.next = null;
+	this._tail = null;
+	this._stack = null;
+	if(this.parent != null) {
+		parent._numChildren++;
+		if(parent.children != null) {
+			var tail = parent._tail;
+			tail.next = this;
+			this.prev = tail;
+			this.next = null;
+		} else parent.children = this;
+		parent._tail = this;
+	}
+	this._numChildren = 0;
+	this._timestamp = 0;
+	this.key = de.polygonal.ds.HashKey._counter++;
+};
+de.polygonal.ds.TreeNode.__name__ = true;
+de.polygonal.ds.TreeNode.__interfaces__ = [de.polygonal.ds.Collection];
+de.polygonal.ds.TreeNode.prototype = {
+	clone: function(assign,copier) {
+		if(assign == null) assign = true;
+		var stack = this._stack == null?new Array():this._stack;
+		var copy = new de.polygonal.ds.TreeNode(copier != null?copier(this.val):this.val);
+		stack[0] = this;
+		stack[1] = copy;
+		var i = 2;
+		while(i > 0) {
+			var c = stack[--i];
+			var n = stack[--i];
+			c._numChildren = n._numChildren;
+			if(n.children != null) {
+				var nchild = n.children;
+				var x;
+				if(assign) x = nchild.val; else if(copier == null) x = (js.Boot.__cast(nchild.val , de.polygonal.ds.Cloneable)).clone(); else x = copier(nchild.val);
+				var cchild = c.children = new de.polygonal.ds.TreeNode(x,c);
+				stack[i++] = nchild;
+				stack[i++] = cchild;
+				nchild = nchild.next;
+				while(nchild != null) {
+					var x1;
+					if(assign) x1 = nchild.val; else if(copier == null) x1 = (js.Boot.__cast(nchild.val , de.polygonal.ds.Cloneable)).clone(); else x1 = copier(nchild.val);
+					cchild.next = new de.polygonal.ds.TreeNode(x1,c);
+					cchild = cchild.next;
+					c._tail = cchild;
+					stack[i++] = nchild;
+					stack[i++] = cchild;
+					nchild = nchild.next;
+				}
+			}
+		}
+		return copy;
+	}
+	,toDA: function() {
+		var a = new de.polygonal.ds.DA();
+		this.preorder(function(node,preflight,userData) {
+			a.set(a._size,node.val);
+			return true;
+		});
+		return a;
+	}
+	,toArray: function() {
+		var a = de.polygonal.ds.ArrayUtil.alloc(this.size());
+		var i = 0;
+		this.preorder(function(node,preflight,userData) {
+			a[i++] = node.val;
+			return true;
+		});
+		return a;
+	}
+	,isEmpty: function() {
+		return !(this.children != null);
+	}
+	,size: function() {
+		var c = 1;
+		var node = this.children;
+		while(node != null) {
+			c += node.size();
+			node = node.next;
+		}
+		return c;
+	}
+	,iterator: function() {
+		return new de.polygonal.ds.TreeIterator(this);
+	}
+	,clear: function(purge) {
+		if(purge == null) purge = false;
+		if(purge) {
+			var node = this.children;
+			while(node != null) {
+				var hook = node.next;
+				node.prev = null;
+				node.next = null;
+				node.clear(purge);
+				node = hook;
+			}
+			var NULL = null;
+			this.val = NULL;
+			this.parent = null;
+			this.children = null;
+			this._tail = null;
+		} else this.children = null;
+		this._numChildren = 0;
+	}
+	,remove: function(x) {
+		var found = false;
+		if(this.val == x) {
+			if(this.parent != null) {
+				if(this.parent.children == this) this.parent.children = this.next;
+				if(this.parent._tail == this) this.parent._tail = this.prev;
+				this.parent._numChildren--;
+				this.parent = null;
+			}
+			if(this.prev != null) this.prev.next = this.next;
+			if(this.next != null) this.next.prev = this.prev;
+			this.next = this.prev = null;
+			this;
+			found = true;
+		}
+		var child = this.children;
+		while(child != null) {
+			var next = child.next;
+			found = found || child.remove(x);
+			child = next;
+		}
+		return found;
+	}
+	,contains: function(x) {
+		var found = false;
+		this.preorder(function(node,preflight,userData) {
+			if(node.val == x) {
+				found = true;
+				return false;
+			}
+			return true;
+		});
+		return found;
+	}
+	,free: function() {
+		if(this.children != null) {
+			var n = this.children;
+			while(n != null) {
+				var next = n.next;
+				n.free();
+				n = next;
+			}
+		}
+		var NULL = null;
+		this.val = NULL;
+		this.prev = null;
+		this.next = null;
+		this.children = null;
+		this.parent = null;
+		this._tail = null;
+	}
+	,_mergeSort: function(node,cmp) {
+		var h = node;
+		var p, q, e, tail = null;
+		var insize = 1;
+		var nmerges, psize, qsize, i;
+		while(true) {
+			p = h;
+			h = tail = null;
+			nmerges = 0;
+			while(p != null) {
+				nmerges++;
+				psize = 0;
+				q = p;
+				var _g = 0;
+				while(_g < insize) {
+					var i1 = _g++;
+					psize++;
+					q = q.next;
+					if(q == null) break;
+				}
+				qsize = insize;
+				while(psize > 0 || qsize > 0 && q != null) {
+					if(psize == 0) {
+						e = q;
+						q = q.next;
+						qsize--;
+					} else if(qsize == 0 || q == null) {
+						e = p;
+						p = p.next;
+						psize--;
+					} else if(cmp(q.val,p.val) >= 0) {
+						e = p;
+						p = p.next;
+						psize--;
+					} else {
+						e = q;
+						q = q.next;
+						qsize--;
+					}
+					if(tail != null) tail.next = e; else h = e;
+					e.prev = tail;
+					tail = e;
+				}
+				p = q;
+			}
+			tail.next = null;
+			if(nmerges <= 1) break;
+			insize <<= 1;
+		}
+		h.prev = null;
+		this._tail = tail;
+		return h;
+	}
+	,_mergeSortComparable: function(node) {
+		var h = node;
+		var p, q, e, tail = null;
+		var insize = 1;
+		var nmerges, psize, qsize, i;
+		while(true) {
+			p = h;
+			h = tail = null;
+			nmerges = 0;
+			while(p != null) {
+				nmerges++;
+				psize = 0;
+				q = p;
+				var _g = 0;
+				while(_g < insize) {
+					var i1 = _g++;
+					psize++;
+					q = q.next;
+					if(q == null) break;
+				}
+				qsize = insize;
+				while(psize > 0 || qsize > 0 && q != null) {
+					if(psize == 0) {
+						e = q;
+						q = q.next;
+						qsize--;
+					} else if(qsize == 0 || q == null) {
+						e = p;
+						p = p.next;
+						psize--;
+					} else if((js.Boot.__cast(p.val , de.polygonal.ds.Comparable)).compare(q.val) >= 0) {
+						e = p;
+						p = p.next;
+						psize--;
+					} else {
+						e = q;
+						q = q.next;
+						qsize--;
+					}
+					if(tail != null) tail.next = e; else h = e;
+					e.prev = tail;
+					tail = e;
+				}
+				p = q;
+			}
+			tail.next = null;
+			if(nmerges <= 1) break;
+			insize <<= 1;
+		}
+		h.prev = null;
+		this._tail = tail;
+		return h;
+	}
+	,_insertionSort: function(node,cmp) {
+		var h = node;
+		var n = h.next;
+		while(n != null) {
+			var m = n.next;
+			var p = n.prev;
+			var v = n.val;
+			if(cmp(v,p.val) < 0) {
+				var i = p;
+				while(i.prev != null) if(cmp(v,i.prev.val) < 0) i = i.prev; else break;
+				if(m != null) {
+					p.next = m;
+					m.prev = p;
+				} else {
+					p.next = null;
+					this._tail = p;
+				}
+				if(i == h) {
+					n.prev = null;
+					n.next = i;
+					i.prev = n;
+					h = n;
+				} else {
+					n.prev = i.prev;
+					i.prev.next = n;
+					n.next = i;
+					i.prev = n;
+				}
+			}
+			n = m;
+		}
+		return h;
+	}
+	,_insertionSortComparable: function(node) {
+		var h = node;
+		var n = h.next;
+		while(n != null) {
+			var m = n.next;
+			var p = n.prev;
+			var v = n.val;
+			if((js.Boot.__cast(p.val , de.polygonal.ds.Comparable)).compare(v) < 0) {
+				var i = p;
+				while(i.prev != null) if((js.Boot.__cast(i.prev.val , de.polygonal.ds.Comparable)).compare(v) < 0) i = i.prev; else break;
+				if(m != null) {
+					p.next = m;
+					m.prev = p;
+				} else {
+					p.next = null;
+					this._tail = p;
+				}
+				if(i == h) {
+					n.prev = null;
+					n.next = i;
+					i.prev = n;
+					h = n;
+				} else {
+					n.prev = i.prev;
+					i.prev.next = n;
+					n.next = i;
+					i.prev = n;
+				}
+			}
+			n = m;
+		}
+		return h;
+	}
+	,_postOrderInternalVisitable: function(node,userData) {
+		if(node.children != null) {
+			var walker = node.children, hook;
+			while(walker != null) {
+				hook = walker.next;
+				if(!this._postOrderInternalVisitable(walker,userData)) return false;
+				walker = hook;
+			}
+		}
+		return (js.Boot.__cast(node.val , de.polygonal.ds.Visitable)).visit(false,userData);
+	}
+	,_postOrderInternal: function(node,process,userData) {
+		if(node.children != null) {
+			var walker = node.children, hook;
+			while(walker != null) {
+				hook = walker.next;
+				if(!this._postOrderInternal(walker,process,userData)) return false;
+				walker = hook;
+			}
+		}
+		return process(node,userData);
+	}
+	,_preOrderInternalVisitablePreflight: function(node,userData) {
+		var v = js.Boot.__cast(node.val , de.polygonal.ds.Visitable);
+		if(v.visit(true,userData)) {
+			if(v.visit(false,userData)) {
+				if(node.children != null) {
+					var walker = node.children, hook;
+					while(walker != null) {
+						hook = walker.next;
+						if(!this._preOrderInternalVisitablePreflight(walker,userData)) return false;
+						walker = hook;
+					}
+				}
+				return true;
+			}
+		}
+		return false;
+	}
+	,_preOrderInternalVisitable: function(node,userData) {
+		var v = js.Boot.__cast(node.val , de.polygonal.ds.Visitable);
+		if(v.visit(false,userData)) {
+			if(node.children != null) {
+				var walker = node.children, hook;
+				while(walker != null) {
+					hook = walker.next;
+					if(!this._preOrderInternalVisitable(walker,userData)) return false;
+					walker = hook;
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+	,_preOrderInternalPreflight: function(node,process,userData) {
+		if(process(node,true,userData)) {
+			if(process(node,false,userData)) {
+				if(node.children != null) {
+					var walker = node.children;
+					while(walker != null) {
+						if(!this._preOrderInternalPreflight(walker,process,userData)) return false;
+						walker = walker.next;
+					}
+				}
+				return true;
+			}
+		}
+		return false;
+	}
+	,_preOrderInternal: function(node,process,userData) {
+		if(process(node,false,userData)) {
+			if(node.children != null) {
+				var walker = node.children;
+				while(walker != null) {
+					if(!this._preOrderInternal(walker,process,userData)) return false;
+					walker = walker.next;
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+	,childIterator: function() {
+		return new de.polygonal.ds.ChildTreeIterator(this);
+	}
+	,sort: function(compare,useInsertionSort) {
+		if(useInsertionSort == null) useInsertionSort = false;
+		if(this.children != null) {
+			if(compare == null) this.children = useInsertionSort?this._insertionSortComparable(this.children):this._mergeSortComparable(this.children); else this.children = useInsertionSort?this._insertionSort(this.children,compare):this._mergeSort(this.children,compare);
+		}
+	}
+	,postorder: function(process,iterative,userData) {
+		if(iterative == null) iterative = false;
+		if(this.parent == null && this.children == null) {
+			if(process == null) (js.Boot.__cast(this.val , de.polygonal.ds.Visitable)).visit(false,userData); else process(this,userData);
+			return;
+		}
+		if(iterative == false) {
+			if(process == null) {
+				var child = this.children, hook;
+				while(child != null) {
+					hook = child.next;
+					if(!this._postOrderInternalVisitable(child,userData)) return;
+					child = hook;
+				}
+				(js.Boot.__cast(this.val , de.polygonal.ds.Visitable)).visit(false,userData);
+			} else {
+				var child = this.children, hook;
+				while(child != null) {
+					hook = child.next;
+					if(!this._postOrderInternal(child,process,userData)) return;
+					child = hook;
+				}
+				process(this,userData);
+			}
+		} else {
+			var time = this._timestamp + 1;
+			var stack = this._stack == null?new Array():this._stack;
+			var top = 1;
+			var max = 1;
+			stack[0] = this;
+			if(process == null) while(top != 0) {
+				var node = stack[top - 1];
+				if(node.children != null) {
+					var found = false;
+					var c = node._tail;
+					while(c != null) {
+						if(c._timestamp < time) {
+							c._timestamp++;
+							stack[top++] = c;
+							if(top > max) max = top;
+							found = true;
+						}
+						c = c.prev;
+					}
+					if(!found) {
+						var v = js.Boot.__cast(node.val , de.polygonal.ds.Visitable);
+						if(!v.visit(false,userData)) return;
+						top--;
+					}
+				} else {
+					var v = js.Boot.__cast(node.val , de.polygonal.ds.Visitable);
+					if(!v.visit(false,userData)) return;
+					node._timestamp++;
+					top--;
+				}
+			} else while(top != 0) {
+				var node = stack[top - 1];
+				if(node.children != null) {
+					var found = false;
+					var c = node._tail;
+					while(c != null) {
+						if(c._timestamp < time) {
+							c._timestamp++;
+							stack[top++] = c;
+							if(top > max) max = top;
+							found = true;
+						}
+						c = c.prev;
+					}
+					if(!found) {
+						if(!process(node,userData)) return;
+						top--;
+					}
+				} else {
+					if(!process(node,userData)) return;
+					node._timestamp++;
+					top--;
+				}
+			}
+			var _g = 0;
+			while(_g < max) {
+				var i = _g++;
+				stack[i] = null;
+			}
+		}
+	}
+	,preorder: function(process,preflight,iterative,userData) {
+		if(iterative == null) iterative = false;
+		if(preflight == null) preflight = false;
+		if(this.parent == null && this.children == null) {
+			if(process == null) {
+				var v = js.Boot.__cast(this.val , de.polygonal.ds.Visitable);
+				if(preflight) {
+					if(v.visit(true,userData)) v.visit(false,userData);
+				} else v.visit(false,userData);
+			} else if(preflight) {
+				if(process(this,true,userData)) process(this,false,userData);
+			} else process(this,false,userData);
+			return;
+		}
+		if(iterative == false) {
+			if(process == null) {
+				if(preflight) {
+					var v = js.Boot.__cast(this.val , de.polygonal.ds.Visitable);
+					if(v.visit(true,userData)) {
+						if(v.visit(false,userData)) {
+							var child = this.children, hook;
+							while(child != null) {
+								hook = child.next;
+								if(!this._preOrderInternalVisitablePreflight(child,userData)) return;
+								child = hook;
+							}
+						}
+					}
+				} else {
+					var v = js.Boot.__cast(this.val , de.polygonal.ds.Visitable);
+					if(v.visit(false,userData)) {
+						var child = this.children, hook;
+						while(child != null) {
+							hook = child.next;
+							if(!this._preOrderInternalVisitable(child,userData)) return;
+							child = hook;
+						}
+					}
+				}
+			} else if(preflight) {
+				if(process(this,true,userData)) {
+					if(process(this,false,userData)) {
+						var child = this.children, hook;
+						while(child != null) {
+							hook = child.next;
+							if(!this._preOrderInternalPreflight(child,process,userData)) return;
+							child = hook;
+						}
+					}
+				}
+			} else if(process(this,false,userData)) {
+				var child = this.children, hook;
+				while(child != null) {
+					hook = child.next;
+					if(!this._preOrderInternal(child,process,userData)) return;
+					child = hook;
+				}
+			}
+		} else {
+			var stack = this._stack == null?new Array():this._stack;
+			var max = 1;
+			var top = 1;
+			stack[0] = this;
+			if(process == null) {
+				if(preflight) while(top != 0) {
+					var node = stack[--top];
+					var v = js.Boot.__cast(node.val , de.polygonal.ds.Visitable);
+					if(!v.visit(true,userData)) continue;
+					if(!v.visit(false,userData)) return;
+					var n = node.children;
+					if(n != null) {
+						var c = node._tail;
+						while(c != null) {
+							stack[top++] = c;
+							if(top > max) max = top;
+							c = c.prev;
+						}
+					}
+				} else while(top != 0) {
+					var node = stack[--top];
+					var v = js.Boot.__cast(node.val , de.polygonal.ds.Visitable);
+					if(!v.visit(false,userData)) return;
+					var n = node.children;
+					if(n != null) {
+						var c = node._tail;
+						while(c != null) {
+							stack[top++] = c;
+							if(top > max) max = top;
+							c = c.prev;
+						}
+					}
+				}
+			} else if(preflight) while(top != 0) {
+				var node = stack[--top];
+				if(!process(node,true,userData)) continue;
+				if(!process(node,false,userData)) return;
+				var n = node.children;
+				if(n != null) {
+					var c = node._tail;
+					while(c != null) {
+						stack[top++] = c;
+						if(top > max) max = top;
+						c = c.prev;
+					}
+				}
+			} else while(top != 0) {
+				var node = stack[--top];
+				if(!process(node,false,userData)) return;
+				var n = node.children;
+				if(n != null) {
+					var c = node._tail;
+					while(c != null) {
+						stack[top++] = c;
+						if(top > max) max = top;
+						c = c.prev;
+					}
+				}
+			}
+			var _g = 0;
+			while(_g < max) {
+				var i = _g++;
+				stack[i] = null;
+			}
+		}
+	}
+	,find: function(x) {
+		var stack = this._stack == null?new Array():this._stack;
+		var top = 1;
+		var max = 1;
+		stack[0] = this;
+		while(top != 0) {
+			var node = stack[--top];
+			if(node.val == x) return node;
+			var n = node.children;
+			if(n != null) {
+				var c = node._tail;
+				while(c != null) {
+					stack[top++] = c;
+					if(top > max) max = top;
+					c = c.prev;
+				}
+			}
+		}
+		var _g = 0;
+		while(_g < max) {
+			var i = _g++;
+			stack[i] = null;
+		}
+		return null;
+	}
+	,appendNode: function(x) {
+		if(x.parent != null) {
+			if(x.parent.children == x) x.parent.children = x.next;
+			if(x.parent._tail == x) x.parent._tail = x.prev;
+			x.parent._numChildren--;
+			x.parent = null;
+		}
+		if(x.prev != null) x.prev.next = x.next;
+		if(x.next != null) x.next.prev = x.prev;
+		x.next = x.prev = null;
+		x;
+		x.parent = this;
+		this._numChildren++;
+		if(this.children != null) {
+			this._tail.next = x;
+			x.prev = this._tail;
+			x.next = null;
+			this._tail = x;
+		} else {
+			this._tail = x;
+			this.children = x;
+		}
+	}
+	,unlink: function() {
+		if(this.parent != null) {
+			if(this.parent.children == this) this.parent.children = this.next;
+			if(this.parent._tail == this) this.parent._tail = this.prev;
+			this.parent._numChildren--;
+			this.parent = null;
+		}
+		if(this.prev != null) this.prev.next = this.next;
+		if(this.next != null) this.next.prev = this.prev;
+		this.next = this.prev = null;
+		return this;
+	}
+	,__class__: de.polygonal.ds.TreeNode
+}
+de.polygonal.ds.TreeIterator = function(node) {
+	this._node = node;
+	this._stack = new Array();
+	{
+		this._stack[0] = this._node;
+		this._top = 1;
+		this._c = 0;
+		this;
+	}
+};
+de.polygonal.ds.TreeIterator.__name__ = true;
+de.polygonal.ds.TreeIterator.__interfaces__ = [de.polygonal.ds.Itr];
+de.polygonal.ds.TreeIterator.prototype = {
+	remove: function() {
+		this._top -= this._c;
+	}
+	,next: function() {
+		var node = this._stack[--this._top];
+		var walker = node.children;
+		this._c = 0;
+		while(walker != null) {
+			this._stack[this._top++] = walker;
+			this._c++;
+			walker = walker.next;
+		}
+		return node.val;
+	}
+	,hasNext: function() {
+		return this._top > 0;
+	}
+	,reset: function() {
+		this._stack[0] = this._node;
+		this._top = 1;
+		this._c = 0;
+		return this;
+	}
+	,__class__: de.polygonal.ds.TreeIterator
+}
+de.polygonal.ds.ChildTreeIterator = function(f) {
+	this._f = f;
+	{
+		this._walker = this._f.children;
+		this._hook = null;
+		this;
+	}
+};
+de.polygonal.ds.ChildTreeIterator.__name__ = true;
+de.polygonal.ds.ChildTreeIterator.__interfaces__ = [de.polygonal.ds.Itr];
+de.polygonal.ds.ChildTreeIterator.prototype = {
+	remove: function() {
+		this._hook.unlink();
+	}
+	,next: function() {
+		var x = this._walker.val;
+		this._hook = this._walker;
+		this._walker = this._walker.next;
+		return x;
+	}
+	,hasNext: function() {
+		return this._walker != null;
+	}
+	,reset: function() {
+		this._walker = this._f.children;
+		this._hook = null;
+		return this;
+	}
+	,__class__: de.polygonal.ds.ChildTreeIterator
+}
+de.polygonal.ds.Visitable = function() { }
+de.polygonal.ds.Visitable.__name__ = true;
+de.polygonal.ds.Visitable.prototype = {
+	__class__: de.polygonal.ds.Visitable
+}
+var haxe = haxe || {}
+if(!haxe.xml) haxe.xml = {}
+haxe.xml.Parser = function() { }
+haxe.xml.Parser.__name__ = true;
+haxe.xml.Parser.parse = function(str) {
+	var doc = Xml.createDocument();
+	haxe.xml.Parser.doParse(str,0,doc);
+	return doc;
+}
+haxe.xml.Parser.doParse = function(str,p,parent) {
+	if(p == null) p = 0;
+	var xml = null;
+	var state = 1;
+	var next = 1;
+	var aname = null;
+	var start = 0;
+	var nsubs = 0;
+	var nbrackets = 0;
+	var c = str.charCodeAt(p);
+	while(!(c != c)) {
+		switch(state) {
+		case 0:
+			switch(c) {
+			case 10:case 13:case 9:case 32:
+				break;
+			default:
+				state = next;
+				continue;
+			}
+			break;
+		case 1:
+			switch(c) {
+			case 60:
+				state = 0;
+				next = 2;
+				break;
+			default:
+				start = p;
+				state = 13;
+				continue;
+			}
+			break;
+		case 13:
+			if(c == 60) {
+				var child = Xml.createPCData(HxOverrides.substr(str,start,p - start));
+				parent.addChild(child);
+				nsubs++;
+				state = 0;
+				next = 2;
+			}
+			break;
+		case 17:
+			if(c == 93 && str.charCodeAt(p + 1) == 93 && str.charCodeAt(p + 2) == 62) {
+				var child = Xml.createCData(HxOverrides.substr(str,start,p - start));
+				parent.addChild(child);
+				nsubs++;
+				p += 2;
+				state = 1;
+			}
+			break;
+		case 2:
+			switch(c) {
+			case 33:
+				if(str.charCodeAt(p + 1) == 91) {
+					p += 2;
+					if(HxOverrides.substr(str,p,6).toUpperCase() != "CDATA[") throw "Expected <![CDATA[";
+					p += 5;
+					state = 17;
+					start = p + 1;
+				} else if(str.charCodeAt(p + 1) == 68 || str.charCodeAt(p + 1) == 100) {
+					if(HxOverrides.substr(str,p + 2,6).toUpperCase() != "OCTYPE") throw "Expected <!DOCTYPE";
+					p += 8;
+					state = 16;
+					start = p + 1;
+				} else if(str.charCodeAt(p + 1) != 45 || str.charCodeAt(p + 2) != 45) throw "Expected <!--"; else {
+					p += 2;
+					state = 15;
+					start = p + 1;
+				}
+				break;
+			case 63:
+				state = 14;
+				start = p;
+				break;
+			case 47:
+				if(parent == null) throw "Expected node name";
+				start = p + 1;
+				state = 0;
+				next = 10;
+				break;
+			default:
+				state = 3;
+				start = p;
+				continue;
+			}
+			break;
+		case 3:
+			if(!(c >= 97 && c <= 122 || c >= 65 && c <= 90 || c >= 48 && c <= 57 || c == 58 || c == 46 || c == 95 || c == 45)) {
+				if(p == start) throw "Expected node name";
+				xml = Xml.createElement(HxOverrides.substr(str,start,p - start));
+				parent.addChild(xml);
+				state = 0;
+				next = 4;
+				continue;
+			}
+			break;
+		case 4:
+			switch(c) {
+			case 47:
+				state = 11;
+				nsubs++;
+				break;
+			case 62:
+				state = 9;
+				nsubs++;
+				break;
+			default:
+				state = 5;
+				start = p;
+				continue;
+			}
+			break;
+		case 5:
+			if(!(c >= 97 && c <= 122 || c >= 65 && c <= 90 || c >= 48 && c <= 57 || c == 58 || c == 46 || c == 95 || c == 45)) {
+				var tmp;
+				if(start == p) throw "Expected attribute name";
+				tmp = HxOverrides.substr(str,start,p - start);
+				aname = tmp;
+				if(xml.exists(aname)) throw "Duplicate attribute";
+				state = 0;
+				next = 6;
+				continue;
+			}
+			break;
+		case 6:
+			switch(c) {
+			case 61:
+				state = 0;
+				next = 7;
+				break;
+			default:
+				throw "Expected =";
+			}
+			break;
+		case 7:
+			switch(c) {
+			case 34:case 39:
+				state = 8;
+				start = p;
+				break;
+			default:
+				throw "Expected \"";
+			}
+			break;
+		case 8:
+			if(c == str.charCodeAt(start)) {
+				var val = HxOverrides.substr(str,start + 1,p - start - 1);
+				xml.set(aname,val);
+				state = 0;
+				next = 4;
+			}
+			break;
+		case 9:
+			p = haxe.xml.Parser.doParse(str,p,xml);
+			start = p;
+			state = 1;
+			break;
+		case 11:
+			switch(c) {
+			case 62:
+				state = 1;
+				break;
+			default:
+				throw "Expected >";
+			}
+			break;
+		case 12:
+			switch(c) {
+			case 62:
+				if(nsubs == 0) parent.addChild(Xml.createPCData(""));
+				return p;
+			default:
+				throw "Expected >";
+			}
+			break;
+		case 10:
+			if(!(c >= 97 && c <= 122 || c >= 65 && c <= 90 || c >= 48 && c <= 57 || c == 58 || c == 46 || c == 95 || c == 45)) {
+				if(start == p) throw "Expected node name";
+				var v = HxOverrides.substr(str,start,p - start);
+				if(v != parent.getNodeName()) throw "Expected </" + parent.getNodeName() + ">";
+				state = 0;
+				next = 12;
+				continue;
+			}
+			break;
+		case 15:
+			if(c == 45 && str.charCodeAt(p + 1) == 45 && str.charCodeAt(p + 2) == 62) {
+				parent.addChild(Xml.createComment(HxOverrides.substr(str,start,p - start)));
+				p += 2;
+				state = 1;
+			}
+			break;
+		case 16:
+			if(c == 91) nbrackets++; else if(c == 93) nbrackets--; else if(c == 62 && nbrackets == 0) {
+				parent.addChild(Xml.createDocType(HxOverrides.substr(str,start,p - start)));
+				state = 1;
+			}
+			break;
+		case 14:
+			if(c == 63 && str.charCodeAt(p + 1) == 62) {
+				p++;
+				var str1 = HxOverrides.substr(str,start + 1,p - start - 2);
+				parent.addChild(Xml.createProlog(str1));
+				state = 1;
+			}
+			break;
+		}
+		c = str.charCodeAt(++p);
+	}
+	if(state == 1) {
+		start = p;
+		state = 13;
+	}
+	if(state == 13) {
+		if(p != start || nsubs == 0) parent.addChild(Xml.createPCData(HxOverrides.substr(str,start,p - start)));
+		return p;
+	}
+	throw "Unexpected end";
+}
+var js = js || {}
+js.Boot = function() { }
+js.Boot.__name__ = true;
+js.Boot.__string_rec = function(o,s) {
+	if(o == null) return "null";
+	if(s.length >= 5) return "<...>";
+	var t = typeof(o);
+	if(t == "function" && (o.__name__ || o.__ename__)) t = "object";
+	switch(t) {
+	case "object":
+		if(o instanceof Array) {
+			if(o.__enum__) {
+				if(o.length == 2) return o[0];
+				var str = o[0] + "(";
+				s += "\t";
+				var _g1 = 2, _g = o.length;
+				while(_g1 < _g) {
+					var i = _g1++;
+					if(i != 2) str += "," + js.Boot.__string_rec(o[i],s); else str += js.Boot.__string_rec(o[i],s);
+				}
+				return str + ")";
+			}
+			var l = o.length;
+			var i;
+			var str = "[";
+			s += "\t";
+			var _g = 0;
+			while(_g < l) {
+				var i1 = _g++;
+				str += (i1 > 0?",":"") + js.Boot.__string_rec(o[i1],s);
+			}
+			str += "]";
+			return str;
+		}
+		var tostr;
+		try {
+			tostr = o.toString;
+		} catch( e ) {
+			return "???";
+		}
+		if(tostr != null && tostr != Object.toString) {
+			var s2 = o.toString();
+			if(s2 != "[object Object]") return s2;
+		}
+		var k = null;
+		var str = "{\n";
+		s += "\t";
+		var hasp = o.hasOwnProperty != null;
+		for( var k in o ) { ;
+		if(hasp && !o.hasOwnProperty(k)) {
+			continue;
+		}
+		if(k == "prototype" || k == "__class__" || k == "__super__" || k == "__interfaces__" || k == "__properties__") {
+			continue;
+		}
+		if(str.length != 2) str += ", \n";
+		str += s + k + " : " + js.Boot.__string_rec(o[k],s);
+		}
+		s = s.substring(1);
+		str += "\n" + s + "}";
+		return str;
+	case "function":
+		return "<function>";
+	case "string":
+		return o;
+	default:
+		return String(o);
+	}
+}
+js.Boot.__interfLoop = function(cc,cl) {
+	if(cc == null) return false;
+	if(cc == cl) return true;
+	var intf = cc.__interfaces__;
+	if(intf != null) {
+		var _g1 = 0, _g = intf.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var i1 = intf[i];
+			if(i1 == cl || js.Boot.__interfLoop(i1,cl)) return true;
+		}
+	}
+	return js.Boot.__interfLoop(cc.__super__,cl);
+}
+js.Boot.__instanceof = function(o,cl) {
+	try {
+		if(o instanceof cl) {
+			if(cl == Array) return o.__enum__ == null;
+			return true;
+		}
+		if(js.Boot.__interfLoop(o.__class__,cl)) return true;
+	} catch( e ) {
+		if(cl == null) return false;
+	}
+	switch(cl) {
+	case Int:
+		return Math.ceil(o%2147483648.0) === o;
+	case Float:
+		return typeof(o) == "number";
+	case Bool:
+		return o === true || o === false;
+	case String:
+		return typeof(o) == "string";
+	case Dynamic:
+		return true;
+	default:
+		if(o == null) return false;
+		if(cl == Class && o.__name__ != null) return true; else null;
+		if(cl == Enum && o.__ename__ != null) return true; else null;
+		return o.__enum__ == cl;
+	}
+}
+js.Boot.__cast = function(o,t) {
+	if(js.Boot.__instanceof(o,t)) return o; else throw "Cannot cast " + Std.string(o) + " to " + Std.string(t);
+}
+var jsfTools = jsfTools || {}
+if(!jsfTools.exp) jsfTools.exp = {}
+jsfTools.exp.CSS = function() {
+};
+jsfTools.exp.CSS.__name__ = true;
+jsfTools.exp.CSS.cssFromTextObject = function(text) {
+	var css = "";
+	try {
+		var font = fw.getPlatformNameForPSFont(text.font);
+		var fontsize = text.fontsize;
+		var alignment = text.textRuns.initialAttrs.alignment;
+		var bold = text.textRuns.initialAttrs.bold;
+		var underline = text.textRuns.initialAttrs.underline;
+		var italic = text.textRuns.initialAttrs.italic;
+		css = css + ("font-family:" + font + ";;font-size:" + fontsize + "px;");
+		if(italic) css = css + "font-style: italic;";
+		if(bold) css = css + "font-weight: bold;";
+		css = css + "text-align: " + alignment + ";";
+		if(underline) css = css + "text-decoration: underline;"; else if(text.hasLink && text.urlText != null) css = css + "text-decoration: none;";
+		console.log("after underline");
+		if(text.textRuns.initialAttrs.fillColor != null) css = css + "color: " + jsfTools.exp.CSS.CONVERT_COLOUR(text.textRuns.initialAttrs.fillColor) + ";";
+		if(text.textRuns.initialAttrs.leadingMode == "percentage") {
+			var leading = text.textRuns.initialAttrs.leading * 100;
+			css = css + "line-height: " + Math.round(leading * 100) / 100 + "%;";
+		} else if(text.textRuns.initialAttrs.leadingMode == "exact") {
+			var leading = text.textRuns.initialAttrs.leading;
+			css = css + "line-height: " + leading + "px;";
+		}
+		css = css + "padding-bottom: 2px;";
+		css = css + "padding-top: 1px;";
+	} catch( err ) {
+		alert("cssFromTextObject() " + Std.string(err.description));
+	}
+	return css;
+}
+jsfTools.exp.CSS.CONVERT_COLOUR = function(col) {
+	var colour = col.toLowerCase();
+	var colour1 = StringTools.replace(colour,"#","");
+	if(colour1.charAt(0) == colour1.charAt(1) && colour1.charAt(2) == colour1.charAt(3) && colour1.charAt(4) == colour1.charAt(5)) {
+		var colourTemp = colour1.charAt(0);
+		colourTemp += colour1.charAt(2);
+		colourTemp += colour1.charAt(4);
+		colour1 = colourTemp;
+	}
+	colour1 = "#" + colour1;
+	return colour1;
+}
+jsfTools.exp.CSS.prototype = {
+	__class__: jsfTools.exp.CSS
+}
+function $iterator(o) { if( o instanceof Array ) return function() { return HxOverrides.iter(o); }; return typeof(o.iterator) == 'function' ? $bind(o,o.iterator) : o.iterator; };
+var $_;
+function $bind(o,m) { var f = function(){ return f.method.apply(f.scope, arguments); }; f.scope = o; f.method = m; return f; };
+if(Array.prototype.indexOf) HxOverrides.remove = function(a,o) {
+	var i = a.indexOf(o);
+	if(i == -1) return false;
+	a.splice(i,1);
+	return true;
+}; else null;
+Math.__name__ = ["Math"];
+Math.NaN = Number.NaN;
+Math.NEGATIVE_INFINITY = Number.NEGATIVE_INFINITY;
+Math.POSITIVE_INFINITY = Number.POSITIVE_INFINITY;
+Math.isFinite = function(i) {
+	return isFinite(i);
+};
+Math.isNaN = function(i) {
+	return isNaN(i);
+};
+String.prototype.__class__ = String;
+String.__name__ = true;
+Array.prototype.__class__ = Array;
+Array.__name__ = true;
+var Int = { __name__ : ["Int"]};
+var Dynamic = { __name__ : ["Dynamic"]};
+var Float = Number;
+Float.__name__ = ["Float"];
+var Bool = Boolean;
+Bool.__ename__ = ["Bool"];
+var Class = { __name__ : ["Class"]};
+var Enum = { };
+Xml.Element = "element";
+Xml.PCData = "pcdata";
+Xml.CData = "cdata";
+Xml.Comment = "comment";
+Xml.DocType = "doctype";
+Xml.Prolog = "prolog";
+Xml.Document = "document";
+ObjectHash.nextObjectID = 0;
+de.polygonal.ds.HashKey._counter = 0;
+Layout.main();

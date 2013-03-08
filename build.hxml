@@ -1,6 +1,24 @@
 
--main ExportSprite
+#-main ExportSprite
+#-cp JSFexterns
+#-lib erazorGit
+#--dead-code-elimination
+#-js test.jsf
+
+
+Bridge/build.hxml
+
+--next
+-main Layout
 -cp JSFexterns
 -lib erazorGit
+-lib polygonal
+#--no-traces
 --dead-code-elimination
--js test.jsf
+-js layout.jsf
+
+
+
+
+
+#-cmd open /Applications/Adobe\ Fireworks\ CS5/Configuration/Command\ Panels/panel.swf

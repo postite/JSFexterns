@@ -1,0 +1,48 @@
+#but{
+  position: absolute;
+  right:10px;
+  bottom: 10px;
+  width:30px;
+  height:30px;
+  background: red;
+}
+.grid{
+  position: absolute;
+}
+.container{
+  position: relative;;
+}
+#flash{
+  position:absolute;
+  width:10px;
+  height:10px;
+}
+.null{
+  background:#000000;
+  min-width:30px;
+  min-height:30px;
+  margin:3px;
+}
+.petit{
+  background:grey;
+  width:30px;
+  height:30px;
+  /*position:absolute;*/
+}
+.row,.row-fluid{
+  
+  position:relative;
+  background:#FF0000;
+  /*margin-bottom:1px;*/
+}
+div[class^="span"]{
+  /*position:relative;*/
+  min-height:100px;
+  background:#00AAFF;
+  margin-bottom:1px;
+}
+/*div[class^="span"]>.row{
+ background:green;
+  //padding:20px;
+  height:300px;
+}*/

@@ -12,23 +12,29 @@
 
 package jsf;
 
-import Fw.Point;
-import jsf.Brush;
-import jsf.Guides;
-import jsf.Gradient;
-import jsf.Fill;
-import jsf.Frame;
+import jsf.Point;
+import jsf.objects.Brush;
+import jsf.objects.Guides;
+import jsf.objects.Gradient;
+import jsf.objects.Fill;
+import jsf.objects.Frame;
+import  jsf.objects.PathAttrs;
+import jsf.objects.ExportOptions;
+
+import  jsf.objects.Layer;
+import jsf.objects.elements.Texture;
+
+typedef PngText = Dynamic;
+//values in PNgtext
+//var CreationTime:String;//The date and time the document was created.; /* */ (program):1
+//var Software:String;//The software used to create the document.
 
 
-import  jsf.PathAttrs;
-import  jsf.PngText;
-import  jsf.Layer;
-typedef Texture={
-	name:String //The name that appears in the Brush or Fill panels.
-}
 
-@:native("")
 extern class Document{
+
+
+
 var backgroundColor:String; /* A color String that specifies the document
 canvas color (for more information, see Color String data type).*/
 var backgroundURL:String; /* Sets a general URL for a document that uses
@@ -148,7 +154,7 @@ the document’s canvas color.*/
 var width:Int; /* The width of the document, in pixels. To
 find the right edge of the document, use document.left + document.width.*/
 var currentPageNum:Int; /* The index of the current page.*/
-var topLayers:Array<Dynamic>; /* Array of top level layers within the document
+var topLayers:Array<Layer>; /* Array of top level layers within the document
 objects.*/
 
 

@@ -13,5 +13,8 @@ typedef Rectangle={
 	left:Float,
 	top:Float,
 	right:Float,
-	bottom:Float
+	bottom:Float,
+	?width:Float,
+	?height:Float
+
 }

@@ -25,7 +25,7 @@ If one value is positive and one is negative, the positive value is always used.
 The following table lists the properties of the ExportOptions object, along with their data types and, where appropriate, acceptable values and notes.
 */
 
-package jsf;
+package jsf.objects;
 import Fw.HexColor;
 typedef ExportFrameInfo=Dynamic
 typedef ExportPaletteInfo=Dynamic

@@ -1,9 +1,7 @@
-package jsf;
+package jsf.objects;
 
+import jsf.objects.Gradient;
 
-typedef Pattern={
-	var name:String; /* The name that appears in the Fill panel.*/ 
-}
 
 typedef Fill={
 
@@ -13,9 +11,9 @@ var ditherColors:Array<jsf.Fw.HexColor>; /* Array of two color Strings (see Colo
 var edgeType:String; /* Acceptable values are "hard" and "antialiased".*/ 
 var feather:Int; /* 0 to 1000, which represents the feathering
 value in pixels (0 means no feathering).*/ 
-var gradient:jsf.Gradient; /* Gradient object (see Gradient object).*/ 
+var gradient:Gradient; /* Gradient object (see Gradient object).*/ 
 var name:String; /* The name that appears in the Fill panel.*/ 
-var pattern:jsf.Pattern; /* Pattern object (see Pattern object).*/ 
+var pattern:Pattern; /* Pattern object (see Pattern object).*/ 
 var shape:String; /* Acceptable values are "solid", "linear", "radial", "conical", "satin", "pinch", "folds", "elliptical", "rectangular", "bars", "ripple", "waves", "pattern", and "web dither".*/ 
 var stampingMode:String; /* Acceptable values are "blend" and "blend opaque".*/ 
 var textureBlend:Float; /* 0 to 100*/ 

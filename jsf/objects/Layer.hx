@@ -1,13 +1,18 @@
+package jsf.objects;
 
-package jsf;
+import jsf.objects.Layer;
+import jsf.objects.elements.Element;
+import jsf.objects.FrameNLayerIntersection;
 
-typedef Layer = {
+
+
+extern class Layer  {
 	var disclosure:Bool; /* If set to true, the Layers
 list displays all the objects in the layer. If set to false,
 only the name of the layer appears.*/ 
-var elems:Array<jsf.Element>; /* Array<> of elements inside a layer which also
+var elems:Array<Element>; /* Array<> of elements inside a layer which also
 include sublayers.*/ 
-var frames :Array<jsf.Frame.FrameNLayerIntersection>; /* An Array<> of FrameNLayerIntersection objects
+var frames :Array<FrameNLayerIntersection>; /* An Array<> of FrameNLayerIntersection objects
 (see FrameNLayerIntersection object).*/ 
 var isLayer:Bool; /* Always true for a layer.*/ 
 var layerType :String; /* Acceptable values are "normal" and "web".*/ 

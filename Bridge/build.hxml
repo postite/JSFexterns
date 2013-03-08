@@ -1,0 +1,35 @@
+
+#force classpath beacause build hxml is called by anatother build.hxml 
+-cp Bridge
+
+
+-main Server
+-neko server.n
+
+
+--next
+-cp Bridge
+-main Client
+#-swf-version 8
+#-lib mconsole
+-swf-lib minmlc.swf
+-D network-sandbox
+-swf /Applications/Adobe Fireworks CS5/Configuration/Command Panels/client.swf
+-cmd open "/Applications/Adobe Fireworks CS5/Configuration/Command Panels/client.swf"
+
+
+--next
+-cp Bridge
+-main Bridge
+#-swf-version 8
+
+#-D network-sandbox
+-swf bridge.swf
+
+
+--next
+-cp Bridge
+-main JSconnection
+#-swf-version 8
+-D network-sandbox
+-js jsconnection.js

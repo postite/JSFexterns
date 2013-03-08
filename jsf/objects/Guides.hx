@@ -1,5 +1,5 @@
 
-package jsf ;
+package jsf.objects ;
 
 typedef Guides = {
 	var color:String; /* A color string that specifies the color

@@ -1,7 +1,7 @@
 
-package jsf ;
+package jsf.objects.elements ;
 
-extern class SliceHotSpot extends Element {
+extern class SliceHotSpot extends HotSpot {
 
 var baseName:String; /* Base name for slice filenames, or null for
 automatic name.*/ 

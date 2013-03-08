@@ -1,9 +1,9 @@
 
-package jsf;
+package jsf.objects.elements;
 
-typedef EffectList=Dynamic
-typedef ElementMask=Dynamic
-typedef Struct=Dynamic
+typedef EffectList=Dynamic//Todo
+typedef ElementMask=Dynamic//Todo
+typedef Struct=Dynamic//Todo
 
 
 
@@ -13,7 +13,7 @@ extern class Element  {
 
 var blendMode:String; /* Acceptable values are "normal", "multiply", "screen", "darken", "lighten", "difference", "hue", "saturation", "color", "luminosity", "invert", "tint",
 and "erase".*/ 
-var customData:Struct; /* Assign any objects (array, integer, String,
+var customData:Dynamic; /* Assign any objects (array, integer, String,
 and so on).*/ 
 var effectList:EffectList; /* EffectList object (for more information,
 see EffectList object).*/ 
