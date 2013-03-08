@@ -13,7 +13,7 @@ not yet fully implemented nor tested ..
 to export sprites from fireworks
 
 -layout:
-generate bootsrap based Html layout from a fireworks file
+generate bootstrap based Html layout from a fireworks file
 
 -Bridge/
 socket based panel to send layout to a html preview 

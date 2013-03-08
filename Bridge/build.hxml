@@ -4,7 +4,7 @@
 
 
 -main Server
--neko server.n
+-neko Bridge/server.n
 
 
 --next
@@ -24,7 +24,7 @@
 #-swf-version 8
 
 #-D network-sandbox
--swf bridge.swf
+-swf Bridge/bridge.swf
 
 
 --next
@@ -32,4 +32,4 @@
 -main JSconnection
 #-swf-version 8
 -D network-sandbox
--js jsconnection.js
+-js Bridge/jsconnection.js

@@ -1,21 +1,22 @@
-
+#-cp sprite
 #-main ExportSprite
 #-cp JSFexterns
 #-lib erazorGit
 #--dead-code-elimination
-#-js test.jsf
+#-js sprite/exportsprite.jsf
 
 
 Bridge/build.hxml
 
 --next
+-cp layout
 -main Layout
 -cp JSFexterns
 -lib erazorGit
 -lib polygonal
 #--no-traces
 --dead-code-elimination
--js layout.jsf
+-js layout/layout.jsf
 
 
 

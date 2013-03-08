@@ -41,18 +41,19 @@ var rawWidth:Float; /* Width of the area occupied by the pixels
 var rawHeight:Float; /* Height of the area occupied by the pixels
 (not the area of the bounding box).*/ 
 
+
+
+
 /// not in the doc but exists
-
-
-var fontsize:Int;
-var font:String;
-var alignment:String;//left,right,center etc..
-var bold:Bool;
-var underline:Bool;
-var italic:Bool;
-var fillColor:String;//hexa
-var leadingMode:String;//percentage , extact..
-var leading:Float;//line-height
-var hasLink:Bool;
-var urlText:String;
+ var fontsize:Int;
+ var font:String;
+// var alignment:String;//left,right,center etc..
+// var bold:Bool;
+// var underline:Bool;
+// var italic:Bool;
+// var fillColor:String;//hexa
+// var leadingMode:String;//percentage , extact..
+// var leading:Float;//line-height
+ var hasLink:Bool;
+ var urlText:String;
 }

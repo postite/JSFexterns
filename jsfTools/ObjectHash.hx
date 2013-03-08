@@ -1,3 +1,5 @@
+ package jsfTools;
+
  class ObjectHash <T> {
 	
 	

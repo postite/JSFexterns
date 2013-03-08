@@ -11,7 +11,7 @@ import jsf.Rectangle;
 import de.polygonal.ds.TreeBuilder;
 import de.polygonal.ds.TreeNode;
 import de.polygonal.ds.TreeBuilder;
-import ObjectHash;
+import jsfTools.ObjectHash;
 import jsfTools.exp.CSS;
 
 typedef File={

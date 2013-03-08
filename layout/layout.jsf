@@ -222,8 +222,8 @@ Layout.prototype = {
 			this.ignoreMap.hash.set((function($this) {
 				var $r;
 				if(big.___id___ == null) {
-					big.___id___ = ObjectHash.nextObjectID++;
-					if(ObjectHash.nextObjectID == 2147483647) ObjectHash.nextObjectID = 0;
+					big.___id___ = jsfTools.ObjectHash.nextObjectID++;
+					if(jsfTools.ObjectHash.nextObjectID == 2147483647) jsfTools.ObjectHash.nextObjectID = 0;
 				}
 				$r = big.___id___;
 				return $r;
@@ -232,8 +232,8 @@ Layout.prototype = {
 				if(this.containers.hash.get((function($this) {
 					var $r;
 					if(minus.___id___ == null) {
-						minus.___id___ = ObjectHash.nextObjectID++;
-						if(ObjectHash.nextObjectID == 2147483647) ObjectHash.nextObjectID = 0;
+						minus.___id___ = jsfTools.ObjectHash.nextObjectID++;
+						if(jsfTools.ObjectHash.nextObjectID == 2147483647) jsfTools.ObjectHash.nextObjectID = 0;
 					}
 					$r = minus.___id___;
 					return $r;
@@ -243,8 +243,8 @@ Layout.prototype = {
 					this.containers.hash.set((function($this) {
 						var $r;
 						if(big.___id___ == null) {
-							big.___id___ = ObjectHash.nextObjectID++;
-							if(ObjectHash.nextObjectID == 2147483647) ObjectHash.nextObjectID = 0;
+							big.___id___ = jsfTools.ObjectHash.nextObjectID++;
+							if(jsfTools.ObjectHash.nextObjectID == 2147483647) jsfTools.ObjectHash.nextObjectID = 0;
 						}
 						$r = big.___id___;
 						return $r;
@@ -252,8 +252,8 @@ Layout.prototype = {
 					this.ignoreMap.hash.set((function($this) {
 						var $r;
 						if(minus.___id___ == null) {
-							minus.___id___ = ObjectHash.nextObjectID++;
-							if(ObjectHash.nextObjectID == 2147483647) ObjectHash.nextObjectID = 0;
+							minus.___id___ = jsfTools.ObjectHash.nextObjectID++;
+							if(jsfTools.ObjectHash.nextObjectID == 2147483647) jsfTools.ObjectHash.nextObjectID = 0;
 						}
 						$r = minus.___id___;
 						return $r;
@@ -264,8 +264,8 @@ Layout.prototype = {
 				if(!this.inTree.hash.get((function($this) {
 					var $r;
 					if(big.___id___ == null) {
-						big.___id___ = ObjectHash.nextObjectID++;
-						if(ObjectHash.nextObjectID == 2147483647) ObjectHash.nextObjectID = 0;
+						big.___id___ = jsfTools.ObjectHash.nextObjectID++;
+						if(jsfTools.ObjectHash.nextObjectID == 2147483647) jsfTools.ObjectHash.nextObjectID = 0;
 					}
 					$r = big.___id___;
 					return $r;
@@ -274,8 +274,8 @@ Layout.prototype = {
 					this.inTree.hash.set((function($this) {
 						var $r;
 						if(big.___id___ == null) {
-							big.___id___ = ObjectHash.nextObjectID++;
-							if(ObjectHash.nextObjectID == 2147483647) ObjectHash.nextObjectID = 0;
+							big.___id___ = jsfTools.ObjectHash.nextObjectID++;
+							if(jsfTools.ObjectHash.nextObjectID == 2147483647) jsfTools.ObjectHash.nextObjectID = 0;
 						}
 						$r = big.___id___;
 						return $r;
@@ -284,8 +284,8 @@ Layout.prototype = {
 				this.containers.hash.set((function($this) {
 					var $r;
 					if(big.___id___ == null) {
-						big.___id___ = ObjectHash.nextObjectID++;
-						if(ObjectHash.nextObjectID == 2147483647) ObjectHash.nextObjectID = 0;
+						big.___id___ = jsfTools.ObjectHash.nextObjectID++;
+						if(jsfTools.ObjectHash.nextObjectID == 2147483647) jsfTools.ObjectHash.nextObjectID = 0;
 					}
 					$r = big.___id___;
 					return $r;
@@ -293,8 +293,8 @@ Layout.prototype = {
 				this.ignoreMap.hash.set((function($this) {
 					var $r;
 					if(big.___id___ == null) {
-						big.___id___ = ObjectHash.nextObjectID++;
-						if(ObjectHash.nextObjectID == 2147483647) ObjectHash.nextObjectID = 0;
+						big.___id___ = jsfTools.ObjectHash.nextObjectID++;
+						if(jsfTools.ObjectHash.nextObjectID == 2147483647) jsfTools.ObjectHash.nextObjectID = 0;
 					}
 					$r = big.___id___;
 					return $r;
@@ -302,8 +302,8 @@ Layout.prototype = {
 				if(!this.contained.hash.get((function($this) {
 					var $r;
 					if(minus.___id___ == null) {
-						minus.___id___ = ObjectHash.nextObjectID++;
-						if(ObjectHash.nextObjectID == 2147483647) ObjectHash.nextObjectID = 0;
+						minus.___id___ = jsfTools.ObjectHash.nextObjectID++;
+						if(jsfTools.ObjectHash.nextObjectID == 2147483647) jsfTools.ObjectHash.nextObjectID = 0;
 					}
 					$r = minus.___id___;
 					return $r;
@@ -312,8 +312,8 @@ Layout.prototype = {
 					this.contained.hash.set((function($this) {
 						var $r;
 						if(minus.___id___ == null) {
-							minus.___id___ = ObjectHash.nextObjectID++;
-							if(ObjectHash.nextObjectID == 2147483647) ObjectHash.nextObjectID = 0;
+							minus.___id___ = jsfTools.ObjectHash.nextObjectID++;
+							if(jsfTools.ObjectHash.nextObjectID == 2147483647) jsfTools.ObjectHash.nextObjectID = 0;
 						}
 						$r = minus.___id___;
 						return $r;
@@ -321,8 +321,8 @@ Layout.prototype = {
 					this.ignoreMap.hash.set((function($this) {
 						var $r;
 						if(minus.___id___ == null) {
-							minus.___id___ = ObjectHash.nextObjectID++;
-							if(ObjectHash.nextObjectID == 2147483647) ObjectHash.nextObjectID = 0;
+							minus.___id___ = jsfTools.ObjectHash.nextObjectID++;
+							if(jsfTools.ObjectHash.nextObjectID == 2147483647) jsfTools.ObjectHash.nextObjectID = 0;
 						}
 						$r = minus.___id___;
 						return $r;
@@ -332,8 +332,8 @@ Layout.prototype = {
 			if(!this.ignoreMap.hash.get((function($this) {
 				var $r;
 				if(minus.___id___ == null) {
-					minus.___id___ = ObjectHash.nextObjectID++;
-					if(ObjectHash.nextObjectID == 2147483647) ObjectHash.nextObjectID = 0;
+					minus.___id___ = jsfTools.ObjectHash.nextObjectID++;
+					if(jsfTools.ObjectHash.nextObjectID == 2147483647) jsfTools.ObjectHash.nextObjectID = 0;
 				}
 				$r = minus.___id___;
 				return $r;
@@ -341,10 +341,10 @@ Layout.prototype = {
 		}
 	}
 	,imbriqueWrap: function() {
-		this.ignoreMap = new ObjectHash();
-		this.contained = new ObjectHash();
-		this.containers = new ObjectHash();
-		this.inTree = new ObjectHash();
+		this.ignoreMap = new jsfTools.ObjectHash();
+		this.contained = new jsfTools.ObjectHash();
+		this.containers = new jsfTools.ObjectHash();
+		this.inTree = new jsfTools.ObjectHash();
 		var liste = Lambda.list(this.hots);
 		var tree = new de.polygonal.ds.TreeNode(null);
 		console.log(liste.last().width);
@@ -520,13 +520,6 @@ List.prototype = {
 		this.length++;
 	}
 	,__class__: List
-}
-var ObjectHash = function() {
-	this.hash = new IntHash();
-};
-ObjectHash.__name__ = true;
-ObjectHash.prototype = {
-	__class__: ObjectHash
 }
 var Reflect = function() { }
 Reflect.__name__ = true;
@@ -2027,6 +2020,13 @@ js.Boot.__cast = function(o,t) {
 	if(js.Boot.__instanceof(o,t)) return o; else throw "Cannot cast " + Std.string(o) + " to " + Std.string(t);
 }
 var jsfTools = jsfTools || {}
+jsfTools.ObjectHash = function() {
+	this.hash = new IntHash();
+};
+jsfTools.ObjectHash.__name__ = true;
+jsfTools.ObjectHash.prototype = {
+	__class__: jsfTools.ObjectHash
+}
 if(!jsfTools.exp) jsfTools.exp = {}
 jsfTools.exp.CSS = function() {
 };
@@ -2114,6 +2114,6 @@ Xml.Comment = "comment";
 Xml.DocType = "doctype";
 Xml.Prolog = "prolog";
 Xml.Document = "document";
-ObjectHash.nextObjectID = 0;
 de.polygonal.ds.HashKey._counter = 0;
+jsfTools.ObjectHash.nextObjectID = 0;
 Layout.main();
