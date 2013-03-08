@@ -5,10 +5,11 @@
 #--dead-code-elimination
 #-js sprite/exportsprite.jsf
 
+###generate Bridge
+#Bridge/build.hxml
+#--next
 
-Bridge/build.hxml
 
---next
 -cp layout
 -main Layout
 -cp JSFexterns

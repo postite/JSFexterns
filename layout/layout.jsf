@@ -137,11 +137,9 @@ Layout.prototype = {
 		var xml;
 		switch(typedElement.type) {
 		case "text":
-			var textelem = typedElement.element;
-			var tag = this.getTextTag(textelem);
-			xml = Xml.parse("<" + tag.tagName + ">" + textelem.textChars + "</" + tag.tagName + ">");
-			var style = jsfTools.exp.CSS.cssFromTextObject(textelem);
-			xml.firstElement().set("style",style);
+			console.log("before generateText");
+			xml = this.generateText(typedElement);
+			console.log("after generateText");
 			return xml;
 		case "image":
 			var hotelem = typedElement.element;
@@ -151,6 +149,30 @@ Layout.prototype = {
 			xml = Xml.parse("<div>paf</div>");
 			return xml;
 		}
+	}
+	,generateText: function(typedElement) {
+		console.log("generateText");
+		var retXml = null;
+		if(typedElement.sims.length > 1) {
+			retXml = Xml.createElement("section");
+			var $it0 = typedElement.sims.iterator();
+			while( $it0.hasNext() ) {
+				var elem = $it0.next();
+				var textelem = elem;
+				var tag = this.getTextTag(textelem);
+				var subXml = Xml.parse("<" + tag.tagName + ">" + textelem.textChars + "</" + tag.tagName + ">");
+				var style = jsfTools.exp.CSS.cssFromTextObject(textelem);
+				subXml.firstElement().set("style",style);
+				retXml.addChild(subXml);
+			}
+		} else {
+			var textelem = typedElement.element;
+			var tag = this.getTextTag(textelem);
+			retXml = Xml.parse("<" + tag.tagName + ">" + textelem.textChars + "</" + tag.tagName + ">");
+			var style = jsfTools.exp.CSS.cssFromTextObject(textelem);
+			retXml.firstElement().set("style",style);
+		}
+		return retXml;
 	}
 	,htmlrecurse: function(tree,xml) {
 		var $it0 = tree.childIterator();
@@ -423,33 +445,41 @@ Layout.prototype = {
 		this.exportTree(tree);
 	}
 	,doSelectSimilar: function(elem,hot) {
-		if(this.overlaps(hot.pixelRect,elem.pixelRect)) return true;
+		if(this.overlaps(hot.pixelRect,elem.pixelRect)) {
+			console.log("elem" + elem.name);
+			return true;
+		}
 		return false;
 	}
 	,checkZoneType: function(slice) {
+		var typed = null;
 		if(slice == null) slice = fw.selection[0];
 		var _g = 0, _g1 = this.dom.layers;
 		while(_g < _g1.length) {
 			var l = _g1[_g];
 			++_g;
 			if(l.layerType != "web") {
+				var numSimilar = new List();
 				var _g2 = 0, _g3 = l.frames[this.dom.currentFrameNum].elements;
 				while(_g2 < _g3.length) {
 					var e = _g3[_g2];
 					++_g2;
 					var elem = e;
 					if(this.doSelectSimilar(elem,slice)) {
+						console.log("similar");
 						if(this.match(elem,"Text")) {
 							var textElem = elem;
 							console.log(textElem.textChars);
-							return { type : "text", element : textElem};
+							numSimilar.add(elem);
+							console.log("sims=" + numSimilar.length);
+							typed = { type : "text", element : textElem, sims : numSimilar};
 						}
-						if(this.match(elem,"Image")) return { type : "image", element : elem};
+						if(this.match(elem,"Image")) typed = { type : "image", element : elem};
 					} else continue;
 				}
 			}
 		}
-		return null;
+		return typed;
 	}
 	,generateImage: function(slice) {
 		var opts = { };

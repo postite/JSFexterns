@@ -24,7 +24,8 @@ typedef File={
 
 typedef TypedElement={
 	type:String,
-	element:Element
+	element:Element,
+	?sims:List<Element>
 }
 
 class Layout 
@@ -48,7 +49,7 @@ class Layout
 
 		//checkZoneType();
 
-		//parseLayers();
+		
 		//exportHTML();
 		//trace(exportables.length);
 	}
@@ -63,40 +64,9 @@ class Layout
 		return (Rect.right > R2.right) && (Rect.left < R2.left) && (Rect.bottom > R2.bottom) && (Rect.top < R2.top);
 	}
 
-	function parseLayers(){
-		for ( layer in dom.layers){
-			//trace(layer.name);
-			for( elem in layer.elems){
-				////trace("element"+elem);
-				////trace("nom"+elem.name);
-				//elem.customData="polo";
-				//trace(identify(elem));
-				//trace("data="+elem.customData);
-				////trace (untyped(elem).oType);
-				////trace("data"+elem.customData);
-			}
-		}
-	}
+	
 
-	// function identify(elem:Element):Dynamic{
-	//  r  = ~/(object) ([a-zA-Z0-9_]+)/;
- //    var str = Std.string(elem);
- //    //trace(r.match(str)); // true : 'world' was found in the string
- //    //trace("its'a text?"+r.matched(2)); // false
- //    switch (r.matched(2)) {
- //    	case "Text":
- //    		elem.customData="text";
- //    	case "Layer":
- //    		elem.customData="layer";
- //    	case  "RectanglePrimitive":
- //    		elem.customData="Rect";
- //    	case "SliceHotSpot":
- //    		elem.customData="slice";
- //    	default:
- //    	return null;
- //    }
- //    return null;
-	// }
+
 
 
 	function match(elem:Element,obj:String):Bool{
@@ -131,31 +101,31 @@ class Layout
 	function checkZoneType(?slice:HotSpot):TypedElement
 	{
 		//var slice:HotSpot=null;
+		var typed:TypedElement=null;
 		if (slice==null)slice= cast Fw.selection[0];
 		//trace("slice name="+slice.name);
 		for( l in dom.layers){
 		if(l.layerType != "web"){
 			//trace("in not web layers");
+			var numSimilar:List<Element>= new List();
 			for(e in l.frames[dom.currentFrameNum].elements){
 				//trace("elements");
 				/// check if not layer == web
 				var elem = e;
-				//trace("elem"+elem.name);
 				if(doSelectSimilar(elem,slice)){
-					//trace ("similar"+elem.name);
-				//	trace("element="+elem);
-				//identify(elem);
+					trace("similar");
 					if( match(elem,"Text")){
 						var textElem:Text= cast elem;
 						trace (textElem.textChars);
-						//Reflect.callMethod(this,_callback,["text",textElem]);
-						return cast {type:"text",element:textElem};
-					
+						numSimilar.add(elem);
+						trace("sims="+numSimilar.length);
+						typed= {type:"text",element:textElem,sims:numSimilar};
+						
 					}
 					if( match (elem,"Image")){
 					//	trace("it's anImage");
-						return cast {type:"image",element:elem};
-						//Reflect.callMethod(this,_callback,["bitmap",slice]);
+						typed= {type:"image",element:elem};
+						
 					}
 					}else{
 						//trace("pas trouvé");
@@ -164,12 +134,14 @@ class Layout
 			}
 		}
 		}
-		return null;
+		 return typed;
 	}
 	function doSelectSimilar(elem:Element,hot:HotSpot):Bool{
-
-		if (overlaps(hot.pixelRect,elem.pixelRect))
+		
+		if (overlaps(hot.pixelRect,elem.pixelRect)){
+		trace("elem"+elem.name);
 		return true;
+		}
 
 		return false;
 	}
@@ -574,7 +546,37 @@ function imbriqueReq (big:HotSpot,tree:TreeNode<HotSpot>,liste:List<HotSpot>){
 		}
 		return xml;
 	}
+	function generateText(typedElement:TypedElement):Xml
+	{
+		trace("generateText");
+		var retXml:Xml=null;
+		if( typedElement.sims.length>1){
 
+			retXml= Xml.createElement("section");
+			for( elem in typedElement.sims){
+				var textelem:Text= cast elem;
+				var tag=getTextTag(textelem);
+				var subXml=Xml.parse(Std.format('<${tag.tagName}>${textelem.textChars}</${tag.tagName}>'));
+				var style=CSS.cssFromTextObject(textelem);
+				//trace("style="+"'"+style+"'");
+				//xml.firstElement().set("style","font-family:Frutiger LT 57 Condensed;font-style:italic;color:#f0f;line-height: 121%;padding-bottom:2px;padding-top:1px");
+				//xml.firstElement().set("style","line-height: 121%;font-family:Frutiger LT 57 Condensed;font-style:italic;color:#f0f;padding-bottom:2px;padding-top:1px");
+				subXml.firstElement().set("style",style);
+				retXml.addChild(subXml);
+			}
+		}else{
+			var textelem:Text= cast typedElement.element;
+			var tag=getTextTag(textelem);
+			 retXml=Xml.parse(Std.format('<${tag.tagName}>${textelem.textChars}</${tag.tagName}>'));
+			var style=CSS.cssFromTextObject(textelem);
+			//trace("style="+"'"+style+"'");
+			//xml.firstElement().set("style","font-family:Frutiger LT 57 Condensed;font-style:italic;color:#f0f;line-height: 121%;padding-bottom:2px;padding-top:1px");
+			//xml.firstElement().set("style","line-height: 121%;font-family:Frutiger LT 57 Condensed;font-style:italic;color:#f0f;padding-bottom:2px;padding-top:1px");
+			retXml.firstElement().set("style",style);
+			
+		}
+		return retXml;
+	}
 	function generateExport(hot:HotSpot):Xml
 	{
 
@@ -585,15 +587,11 @@ function imbriqueReq (big:HotSpot,tree:TreeNode<HotSpot>,liste:List<HotSpot>){
 		var xml:Xml;
 		switch (typedElement.type) {
 			case "text":
-			var textelem:Text= cast typedElement.element;
-			var tag=getTextTag(textelem);
-			xml=Xml.parse(Std.format('<${tag.tagName}>${textelem.textChars}</${tag.tagName}>'));
-			var style=CSS.cssFromTextObject(textelem);
-			//trace("style="+"'"+style+"'");
-			//xml.firstElement().set("style","font-family:Frutiger LT 57 Condensed;font-style:italic;color:#f0f;line-height: 121%;padding-bottom:2px;padding-top:1px");
-			//xml.firstElement().set("style","line-height: 121%;font-family:Frutiger LT 57 Condensed;font-style:italic;color:#f0f;padding-bottom:2px;padding-top:1px");
-			xml.firstElement().set("style",style);
-				return xml;
+			//var textelem:Text= cast typedElement.element;
+			trace("before generateText");
+			xml=generateText(typedElement);
+			trace("after generateText");
+			return xml;
 			case "image":
 			var hotelem:HotSpot= cast typedElement.element;
 			xml=Xml.parse(Std.format('<img src="${generateImage(hotelem)}"/>'));
@@ -639,14 +637,7 @@ function toHtml(tree:TreeNode<HotSpot>):String
 	}
 }
 
-@:template("
-	
-	
-		
-		<div>@recHelper(tree)</div>
-	
-	")
- class Tree2View extends erazor.macro.Template<{tree:TreeNode<HotSpot>,recHelper:Dynamic}>{}
+
 
 
 
