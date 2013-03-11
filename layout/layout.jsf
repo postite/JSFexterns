@@ -1,3 +1,8 @@
+function $extend(from, fields) {
+	function inherit() {}; inherit.prototype = from; var proto = new inherit();
+	for (var name in fields) proto[name] = fields[name];
+	return proto;
+}
 var EReg = function(r,opt) {
 	opt = opt.split("u").join("");
 	this.r = new RegExp(r,opt);
@@ -103,6 +108,7 @@ var Layout = function() {
 	this.fluid = true;
 	this.dom = fw.getDocumentDOM();
 	this.dir = fw.browseForFolderURL("Select export directory for  images",Files.getDirectory(this.dom.lastExportFile) != null?Files.getDirectory(this.dom.lastExportFile):Files.getDirectory(this.dom.lastExportFile));
+	this.textrules = new List();
 	this.parseSlice(true);
 };
 Layout.__name__ = true;
@@ -115,7 +121,10 @@ Layout.prototype = {
 		xml.set("class",tree.val.name);
 		var outXml = this.htmlrecurse(tree,xml);
 		console.log(outXml.toString());
+		var externCss = new TextCSSView().execute({ textes : this.textrules});
+		console.log("externCss=" + externCss);
 		this.dom.pngText.HTML = outXml.toString();
+		this.dom.pngText.CSS = externCss;
 		console.log("after dom.pngText");
 		return "pol";
 	}
@@ -159,18 +168,19 @@ Layout.prototype = {
 			while( $it0.hasNext() ) {
 				var elem = $it0.next();
 				var textelem = elem;
+				console.log("textelem=" + textelem.textChars);
 				var tag = this.getTextTag(textelem);
-				var subXml = Xml.parse("<" + tag.tagName + ">" + textelem.textChars + "</" + tag.tagName + ">");
+				var subXml = Xml.parse("<" + tag.tagName + " class=\"" + tag.name + "\">" + textelem.textChars + "</" + tag.tagName + ">");
 				var style = jsfTools.exp.CSS.cssFromTextObject(textelem);
-				subXml.firstElement().set("style",style);
+				this.textrules.add({ name : tag.name, rules : style});
 				retXml.addChild(subXml);
 			}
 		} else {
 			var textelem = typedElement.element;
 			var tag = this.getTextTag(textelem);
-			retXml = Xml.parse("<" + tag.tagName + ">" + textelem.textChars + "</" + tag.tagName + ">");
+			retXml = Xml.parse("<" + tag.tagName + " class=\"" + tag.name + "\">" + textelem.textChars + "</" + tag.tagName + ">");
 			var style = jsfTools.exp.CSS.cssFromTextObject(textelem);
-			retXml.firstElement().set("style",style);
+			this.textrules.add({ name : tag.name, rules : style});
 		}
 		return retXml;
 	}
@@ -187,7 +197,7 @@ Layout.prototype = {
 				if(treenode.children != null && treenode.children.val.color == "#00ffff") {
 				} else {
 				}
-				_node.set("style","width:" + Math.round(node.width) + "px;height:" + Math.round(node.height) + "px;background:" + node.color);
+				_node.set("style","width:" + Math.round(node.width) + "px;height:" + Math.round(node.height) + "px;background:" + node.color + ";");
 			}
 			xml.addChild(_node);
 			if(treenode.children != null) this.htmlrecurse(treenode,_node); else {
@@ -507,6 +517,37 @@ Layout.prototype = {
 	}
 	,__class__: Layout
 }
+var erazor = erazor || {}
+if(!erazor.macro) erazor.macro = {}
+erazor.macro.Template = function() {
+};
+erazor.macro.Template.__name__ = true;
+erazor.macro.Template.prototype = {
+	__class__: erazor.macro.Template
+}
+var TextCSSView = function() {
+	erazor.macro.Template.call(this);
+};
+TextCSSView.__name__ = true;
+TextCSSView.__super__ = erazor.macro.Template;
+TextCSSView.prototype = $extend(erazor.macro.Template.prototype,{
+	execute: function(__context__) {
+		var __b__ = new StringBuf();
+		var $it0 = __context__.textes.iterator();
+		while( $it0.hasNext() ) {
+			var css = $it0.next();
+			__b__.b += Std.string("\n\t.");
+			__b__.b += Std.string(css.name);
+			__b__.b += Std.string("{\n\t\t");
+			__b__.b += Std.string(css.rules);
+			__b__.b += Std.string("\n\t}\n");
+			null;
+		}
+		__b__.b += Std.string("\n");
+		return __b__.b;
+	}
+	,__class__: TextCSSView
+});
 var List = function() {
 	this.length = 0;
 };
@@ -671,17 +712,6 @@ Xml.prototype = {
 		if(x._parent != null) HxOverrides.remove(x._parent._children,x);
 		x._parent = this;
 		this._children.push(x);
-	}
-	,firstElement: function() {
-		if(this._children == null) throw "bad nodetype";
-		var cur = 0;
-		var l = this._children.length;
-		while(cur < l) {
-			var n = this._children[cur];
-			if(n.nodeType == Xml.Element) return n;
-			cur++;
-		}
-		return null;
 	}
 	,iterator: function() {
 		if(this._children == null) throw "bad nodetype";
@@ -2063,32 +2093,29 @@ jsfTools.exp.CSS = function() {
 jsfTools.exp.CSS.__name__ = true;
 jsfTools.exp.CSS.cssFromTextObject = function(text) {
 	var css = "";
-	try {
-		var font = fw.getPlatformNameForPSFont(text.font);
-		var fontsize = text.fontsize;
-		var alignment = text.textRuns.initialAttrs.alignment;
-		var bold = text.textRuns.initialAttrs.bold;
-		var underline = text.textRuns.initialAttrs.underline;
-		var italic = text.textRuns.initialAttrs.italic;
-		css = css + ("font-family:" + font + ";;font-size:" + fontsize + "px;");
-		if(italic) css = css + "font-style: italic;";
-		if(bold) css = css + "font-weight: bold;";
-		css = css + "text-align: " + alignment + ";";
-		if(underline) css = css + "text-decoration: underline;"; else if(text.hasLink && text.urlText != null) css = css + "text-decoration: none;";
-		console.log("after underline");
-		if(text.textRuns.initialAttrs.fillColor != null) css = css + "color: " + jsfTools.exp.CSS.CONVERT_COLOUR(text.textRuns.initialAttrs.fillColor) + ";";
-		if(text.textRuns.initialAttrs.leadingMode == "percentage") {
-			var leading = text.textRuns.initialAttrs.leading * 100;
-			css = css + "line-height: " + Math.round(leading * 100) / 100 + "%;";
-		} else if(text.textRuns.initialAttrs.leadingMode == "exact") {
-			var leading = text.textRuns.initialAttrs.leading;
-			css = css + "line-height: " + leading + "px;";
-		}
-		css = css + "padding-bottom: 2px;";
-		css = css + "padding-top: 1px;";
-	} catch( err ) {
-		alert("cssFromTextObject() " + Std.string(err.description));
+	var font = fw.getPlatformNameForPSFont(text.font);
+	var fontsize = text.fontsize;
+	var alignment = text.textRuns.initialAttrs.alignment;
+	var bold = text.textRuns.initialAttrs.bold;
+	var underline = text.textRuns.initialAttrs.underline;
+	var italic = text.textRuns.initialAttrs.italic;
+	css = css + ("font-family:" + font + ";font-size:" + fontsize + "px;");
+	console.log("italic=" + Std.string(italic) + " font=" + font + " fontsize=" + fontsize + " alignment=" + alignment + " bold=" + Std.string(bold) + " underline=" + Std.string(underline) + " haslink=" + Std.string(text.hasLink));
+	if(italic) css = css + "font-style: italic;";
+	if(bold) css = css + "font-weight: bold;";
+	css = css + "text-align: " + alignment + ";";
+	if(underline) css = css + "text-decoration: underline;"; else if(text.hasLink && text.urlText != null) css = css + "text-decoration: none;";
+	console.log("after underline");
+	if(text.textRuns.initialAttrs.fillColor != null) css = css + "color: " + jsfTools.exp.CSS.CONVERT_COLOUR(text.textRuns.initialAttrs.fillColor) + ";";
+	if(text.textRuns.initialAttrs.leadingMode == "percentage") {
+		var leading = text.textRuns.initialAttrs.leading * 100;
+		css = css + "line-height: " + Math.round(leading * 100) / 100 + "%;";
+	} else if(text.textRuns.initialAttrs.leadingMode == "exact") {
+		var leading = text.textRuns.initialAttrs.leading;
+		css = css + "line-height: " + leading + "px;";
 	}
+	css = css + "padding-top:1px;";
+	css = css + "padding-bottom:2px;";
 	return css;
 }
 jsfTools.exp.CSS.CONVERT_COLOUR = function(col) {

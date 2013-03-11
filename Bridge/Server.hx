@@ -25,10 +25,15 @@ class ClientData implements ServerApi {
 		}
 	}
 
-	public function say( text : String ){
+	public function doCss( text : String ){
 		trace("server say");
 		for( c in Server.clients)
-			c.api.userSay(text);
+			c.api.userdoCss(text);
+	}
+	public function doHtml( text : String ){
+		trace("server say");
+		for( c in Server.clients)
+			c.api.userdoHtml(text);
 	}
 
 	public function leave() {

@@ -25,69 +25,7 @@ class Client implements ClientApi {
 
 
 
-public static var fakedata:String='<div class="container"><div class="row"><div class="span3"><div class="pataf" style="width:34px;
-			height:36px;
-			background:#ffff00;
-			margin-top:75px;
-			margin-left:80px;
-			"><![CDATA[nope]]></div></div><div class="span2"><![CDATA[nope]]></div><div class="span2"><![CDATA[nope]]></div><div class="span3"><![CDATA[nope]]></div></div><div class="row"><div class="span5"><div class="row"><div class="span2"><![CDATA[nope]]></div><div class="span1"><div class="pataf" style="width:35px;
-			height:39px;
-			background:#000000;
-			margin-top:33px;
-			margin-left:14px;
-			"><![CDATA[nope]]></div></div></div><div class="pataf" style="width:79px;
-			height:173px;
-			background:#ffff00;
-			margin-top:265px;
-			margin-left:60px;
-			"><div class="pataf" style="width:47px;
-			height:36px;
-			background:#000000;
-			margin-top:15px;
-			margin-left:13px;
-			"><![CDATA[nope]]></div></div></div><div class="span6"><div class="pataf" style="width:451px;
-			height:129px;
-			background:#cc0000;
-			margin-top:32px;
-			margin-left:11px;
-			"><div class="pataf" style="width:103px;
-			height:36px;
-			background:#9900cc;
-			margin-top:37px;
-			margin-left:29px;
-			"><![CDATA[nope]]></div></div><div class="row"><div class="span3"><div class="pataf" style="width:133px;
-			height:107px;
-			background:#9900cc;
-			margin-top:21px;
-			margin-left:17px;
-			"><![CDATA[nope]]></div></div><div class="span3"><div class="pataf" style="width:51px;
-			height:50px;
-			background:#9900cc;
-			margin-top:43px;
-			margin-left:40px;
-			"><![CDATA[nope]]></div><div class="pataf" style="width:70px;
-			height:46px;
-			background:#9900cc;
-			margin-top:97px;
-			margin-left:121px;
-			"><![CDATA[nope]]></div></div></div><div class="pataf" style="width:438px;
-			height:87px;
-			background:#cc0000;
-			margin-top:391px;
-			margin-left:12px;
-			"><![CDATA[nope]]></div></div></div><div class="row"><div style="width:39px;
-			height:85px;
-			background:#33cc00;
-			margin-top:4px;
-			margin-left:380px;
-			" class="pataf"><![CDATA[nope]]></div><div class="span2"><![CDATA[nope]]></div><div class="span2"><![CDATA[nope]]></div></div></div>';
-public static var fakedata2:String='<div class="pataf" style="width:79px;
-			height:173px;
-			background:#ffff00;
-			margin-top:265px;
-			margin-left:60px;
-			">popo</div>
-			';
+
 	var s:XMLSocket;
 	var api : ServerApiImpl;
 	var name : String;
@@ -169,9 +107,30 @@ function onClick(e)
 	// trace("data="+data);
 	// trace("after data");
 	
-	var serix:String=haxe.Serializer.run(fakedata2);
-	send(data);
-	trace("after send");
+	//var serix:String=haxe.Serializer.run(fakedata2);
+	userdoHtml(data);
+	trace("after html");
+	var css=getCSS();
+	userdoCss(css);
+	trace("after css");
+}
+
+function getCSS():String
+{
+	var cmd = 'function getCSS(){'
+   +'   var css = {};'
+   +'   if (fw.selection.length) css = fw.selection[0].customData;'
+   +'   else if (fw.getDocumentDOM()) css = fw.getDocumentDOM().pngText;'
+   +'   return (css != undefined) ? css.CSS : "couac";'
+   +'}'
+   +'getCSS();';
+   var variable_str =  untyped __global__["adobe.utils.MMExecute"](cmd);
+  
+   //var variable_str=Reflect.callMethod(__global__,"MMExecute",[cmd]);
+   //trace("afeter"+variable_str);
+
+
+   return variable_str;
 }
 function getFWData():String
 {
@@ -187,6 +146,8 @@ function getFWData():String
   
    //var variable_str=Reflect.callMethod(__global__,"MMExecute",[cmd]);
    //trace("afeter"+variable_str);
+
+
    return variable_str;
 }
 	function onConnect( success : Bool ) {
@@ -232,7 +193,7 @@ function getFWData():String
 		// 	api.identify(name);
 		// 	return;
 		// }
-		api.say(text);
+		
 	}
 
 	public function userJoin( name:String ) {
@@ -243,12 +204,18 @@ function getFWData():String
 		display("User leave <b>"+name+"</b>");
 	}
 
-	public function userSay( text : String ) {
+	public function userdoHtml( text : String ) {
+		trace("userSay");
+		api.doHtml(text);
+		//display("<b>"+name+ " :</b> "+text.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;"));
+		//display("text="+text);
+	}
+	public function userdoCss( text : String ) {
 		trace("userSay");
 		//display("<b>"+name+ " :</b> "+text.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;"));
-		display("text="+text);
+		//display("text="+text);
+		api.doCss(text);
 	}
-
 	function display( line : String ) {
 		//log.text += line + "<br>";
 		trace("log"+line);

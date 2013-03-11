@@ -908,4 +908,35 @@ The following code displays a dialog box with Yes and No buttons and the message
 var shouldDuplicate = fw.yesNoDialog("Would you like to duplicate the element?");*/
 public static function yesNoDialog(promptString:String):Bool;
 
+
+
+/// additional functions for property inspector panel
+//http://help.adobe.com/en_US/fireworks/cs/extend/WS5b3ccc516d4fbf351e63e3d1183c94988d-7ffa.html
+
+
+public static function showPIWindow():Void;
+public static function hidePIWindow():Void;
+public static function isPIExpanded():Void;
+public static function isPIVisible():Void;
+public static function growPIWindow():Void;
+public static function shrinkPIWindow():Void;
+public static function setPIPosition(pt:Point):Void;
+public static function getPIPosition():Point;
+
+
+
+//History panel functions
+
+//These functions control the History panel.
+//TODO
+// public static function historyPalette.clearSteps()
+// public static function historyPalette.copySteps()
+// public static function historyPalette.getSelection()
+// public static function historyPalette.getStepCount()
+// public static function historyPalette.getStepsAsJavaScript()
+// public static function historyPalette.getUndoState()
+// public static function historyPalette.replaySteps()
+// public static function historyPalette.saveAsCommand()
+// public static function historyPalette.setSelection()
+// public static function historyPalette.setUndoState()
 }

@@ -4,6 +4,7 @@ import js.Lib;
 class JSconnection 
 {
 static var current:JQuery;
+static var currentcss:JQuery;
 static function foo(x,y) { trace("tip");return x + y; }
 
 static function log(s:String){ 
@@ -11,6 +12,14 @@ static function log(s:String){
   //var unseri=haxe.Unserializer.run(s);
   trace("un="+s);
   display(s);
+}
+
+static function css(s:String){ 
+ // trace("css from FW"+s);
+ // var unseri=haxe.Unserializer.run(s);
+  // trace("un="+s);
+  if( currentcss!=null)currentcss.remove();
+  currentcss=new JQuery("<style class='fwcss'>"+s+"</style>").appendTo("head");
 }
 
 

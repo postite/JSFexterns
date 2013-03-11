@@ -189,17 +189,22 @@ var JSconnection = $hxClasses["JSconnection"] = function() {
 };
 JSconnection.__name__ = ["JSconnection"];
 JSconnection.current = null;
+JSconnection.currentcss = null;
 JSconnection.foo = function(x,y) {
-	haxe.Log.trace("tip",{ fileName : "JSconnection.hx", lineNumber : 7, className : "JSconnection", methodName : "foo"});
+	haxe.Log.trace("tip",{ fileName : "JSconnection.hx", lineNumber : 8, className : "JSconnection", methodName : "foo"});
 	return x + y;
 }
 JSconnection.log = function(s) {
-	haxe.Log.trace("from FW" + s,{ fileName : "JSconnection.hx", lineNumber : 10, className : "JSconnection", methodName : "log"});
-	haxe.Log.trace("un=" + s,{ fileName : "JSconnection.hx", lineNumber : 12, className : "JSconnection", methodName : "log"});
+	haxe.Log.trace("from FW" + s,{ fileName : "JSconnection.hx", lineNumber : 11, className : "JSconnection", methodName : "log"});
+	haxe.Log.trace("un=" + s,{ fileName : "JSconnection.hx", lineNumber : 13, className : "JSconnection", methodName : "log"});
 	JSconnection.display(s);
 }
+JSconnection.css = function(s) {
+	if(JSconnection.currentcss != null) JSconnection.currentcss.remove();
+	JSconnection.currentcss = new js.JQuery("<style class='fwcss'>" + s + "</style>").appendTo("head");
+}
 JSconnection.display = function(data) {
-	haxe.Log.trace("to append=" + data,{ fileName : "JSconnection.hx", lineNumber : 19, className : "JSconnection", methodName : "display"});
+	haxe.Log.trace("to append=" + data,{ fileName : "JSconnection.hx", lineNumber : 28, className : "JSconnection", methodName : "display"});
 	if(JSconnection.current != null) JSconnection.current.remove();
 	JSconnection.current = new js.JQuery(data).appendTo("body");
 }
@@ -208,8 +213,8 @@ JSconnection.main = function() {
 }
 JSconnection.prototype = {
 	run: function() {
-		haxe.Log.trace("run",{ fileName : "JSconnection.hx", lineNumber : 52, className : "JSconnection", methodName : "run"});
-		haxe.Log.trace(this.cnx.resolve("Bridge").resolve("foo").call([1,2]),{ fileName : "JSconnection.hx", lineNumber : 53, className : "JSconnection", methodName : "run"});
+		haxe.Log.trace("run",{ fileName : "JSconnection.hx", lineNumber : 61, className : "JSconnection", methodName : "run"});
+		haxe.Log.trace(this.cnx.resolve("Bridge").resolve("foo").call([1,2]),{ fileName : "JSconnection.hx", lineNumber : 62, className : "JSconnection", methodName : "run"});
 	}
 	,init: function(e) {
 		new js.JQuery("#but").click($bind(this,this.activeGrid));
@@ -220,7 +225,7 @@ JSconnection.prototype = {
 	}
 	,cnx: null
 	,activeGrid: function(e) {
-		haxe.Log.trace("active grid",{ fileName : "JSconnection.hx", lineNumber : 33, className : "JSconnection", methodName : "activeGrid"});
+		haxe.Log.trace("active grid",{ fileName : "JSconnection.hx", lineNumber : 42, className : "JSconnection", methodName : "activeGrid"});
 		new js.JQuery("<img class='grid' src='grid.png'>").appendTo(new js.JQuery(".container"));
 	}
 	,__class__: JSconnection

@@ -54,10 +54,15 @@ function onClick(e)
 	trace("op");
 	send("tada");
 }
-function transmit(e:String) 
+function transmitHtml(e:String) 
 {
 	//var serix=haxe.Serializer.run(e);
 	js.JSconnection.log.call([e]);
+}
+function transmitCss(e:String) 
+{
+	//var serix=haxe.Serializer.run(e);
+	js.JSconnection.css.call([e]);
 }
 	function onConnect( success : Bool ) {
 		if( !success ) {
@@ -102,7 +107,7 @@ function transmit(e:String)
 		// 	api.identify(name);
 		// 	return;
 		// }
-		api.say(text);
+		api.doHtml(text);
 	}
 
 	public function userJoin( name:String ) {
@@ -113,12 +118,23 @@ function transmit(e:String)
 		display("User leave <b>"+name+"</b>");
 	}
 
-	public function userSay( text : String ) {
-		transmit(text);
+	// public function userSay( text : String ) {
+	// 	transmit(text);
+	// 	//display("<b>"+name+ " :</b> "+text.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;"));
+	// 	display("text="+text);
+	// }
+public function userdoHtml( text : String ) {
+		//trace("userSay");
+		transmitHtml(text);
 		//display("<b>"+name+ " :</b> "+text.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;"));
-		display("text="+text);
+		//display("text="+text);
 	}
-
+	public function userdoCss( text : String ) {
+		trace("userdocssfrom bridge");
+		//display("<b>"+name+ " :</b> "+text.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;"));
+		transmitCss(text);
+		//display("text="+text);
+	}
 	function display( line : String ) {
 		
 		//log.text += line + "<br>";

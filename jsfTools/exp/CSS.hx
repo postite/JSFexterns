@@ -17,23 +17,29 @@ class CSS
     var css="";
 
   // JS_DATA("obj['bold'] = "+o.textRuns.initialAttrs.bold+";");
-	try{
+	
 	    var font = Fw.getPlatformNameForPSFont(text.font); 
 
 	   // var fontsize = obj.field("fontsize");//*10
 	    var fontsize = text.fontsize;
+
 	    var alignment = text.textRuns.initialAttrs.alignment;
 	    var bold= text.textRuns.initialAttrs.bold;
 	    var underline= text.textRuns.initialAttrs.underline;
 	    var italic=text.textRuns.initialAttrs.italic;
-	    
-	   css= css+ Std.format('font-family:$font;;font-size:${fontsize}px;');
+
+
+	    //return css;
+	   css= css+ Std.format('font-family:$font;font-size:${fontsize}px;');
 	//     css  = css + "font-family: "+mapFontFamily(font).replace(/ - /g, ", ")+";font-size: "+fontsize+"%;";
 	
 	// 	if(abort)
 	// 		return;
 		
+
+		trace(Std.format("italic=$italic font=$font fontsize=$fontsize alignment=$alignment bold=$bold underline=$underline haslink=${text.hasLink}"));
 	   // if(italic || (fw.getStyleNameForPSFont(obj["font"]).search(/Italic/i)!= -1))
+		
 		if( italic)
 
 		css = css + "font-style: italic;";
@@ -53,7 +59,7 @@ class CSS
 	    trace("after underline");
 	    if(text.textRuns.initialAttrs.fillColor!=null)
 	        css = css + "color: "+CONVERT_COLOUR(text.textRuns.initialAttrs.fillColor)+";";
-	        
+	       
 	     // line height
 	     if(text.textRuns.initialAttrs.leadingMode == "percentage")
 	    {
@@ -65,13 +71,15 @@ class CSS
 	         var leading = text.textRuns.initialAttrs.leading;
 	         css = css + "line-height: "+leading+"px;";
 	     }
+
+
 	//     // apply padding to match how FW looks
-	 	css = css + "padding-bottom: 2px;";
-	 	css = css + "padding-top: 1px;";
-    }catch(err:Dynamic)
-	 {
-	 	jsf.Global.alert("cssFromTextObject() "+err.description);			
-	 }
+	 	
+	 	
+	 	css = css + "padding-top:1px;";
+	 	css = css + "padding-bottom:2px;";
+	 	
+    
     return css;
 }
 

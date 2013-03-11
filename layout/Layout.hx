@@ -27,10 +27,13 @@ typedef TypedElement={
 	element:Element,
 	?sims:List<Element>
 }
-
+typedef CSSTextElement={
+	name:String,
+	rules:String
+}
 class Layout 
 {
-
+	var textrules:List<CSSTextElement>;
 	var fluid:Bool=true;
 	var ignoreMap:ObjectHash<Bool>;
 	var hots:Array<HotSpot>;
@@ -44,7 +47,7 @@ class Layout
 		dom= Fw.getDocumentDOM();
 		//dir = Fw.browseForFolderURL("Select export directory for sprite images");
 		dir = Fw.browseForFolderURL("Select export directory for  images",  (Files.getDirectory(dom.lastExportFile)!=null)?Files.getDirectory(dom.lastExportFile):Files.getDirectory(dom.lastExportFile));
-
+		textrules= new List();
 		parseSlice(true);
 
 		//checkZoneType();
@@ -527,7 +530,7 @@ function imbriqueReq (big:HotSpot,tree:TreeNode<HotSpot>,liste:List<HotSpot>){
 				}
 
 				//_node.set("class",calculeSpanWidth(node,_node,treenode.parent.val));
-				_node.set("style",Std.format("width:${Math.round(node.width)}px;height:${Math.round(node.height)}px;background:${node.color}"));
+				_node.set("style",Std.format("width:${Math.round(node.width)}px;height:${Math.round(node.height)}px;background:${node.color};"));
 			}
 
 				xml.addChild(_node);
@@ -546,6 +549,7 @@ function imbriqueReq (big:HotSpot,tree:TreeNode<HotSpot>,liste:List<HotSpot>){
 		}
 		return xml;
 	}
+
 	function generateText(typedElement:TypedElement):Xml
 	{
 		trace("generateText");
@@ -555,24 +559,28 @@ function imbriqueReq (big:HotSpot,tree:TreeNode<HotSpot>,liste:List<HotSpot>){
 			retXml= Xml.createElement("section");
 			for( elem in typedElement.sims){
 				var textelem:Text= cast elem;
+				trace("textelem="+textelem.textChars);
 				var tag=getTextTag(textelem);
-				var subXml=Xml.parse(Std.format('<${tag.tagName}>${textelem.textChars}</${tag.tagName}>'));
+				var subXml=Xml.parse(Std.format('<${tag.tagName} class="${tag.name}">${textelem.textChars}</${tag.tagName}>'));
 				var style=CSS.cssFromTextObject(textelem);
+				
 				//trace("style="+"'"+style+"'");
 				//xml.firstElement().set("style","font-family:Frutiger LT 57 Condensed;font-style:italic;color:#f0f;line-height: 121%;padding-bottom:2px;padding-top:1px");
 				//xml.firstElement().set("style","line-height: 121%;font-family:Frutiger LT 57 Condensed;font-style:italic;color:#f0f;padding-bottom:2px;padding-top:1px");
-				subXml.firstElement().set("style",style);
+				//subXml.firstElement().set("style",style);
+				textrules.add({name:tag.name,rules:style});
 				retXml.addChild(subXml);
 			}
 		}else{
 			var textelem:Text= cast typedElement.element;
 			var tag=getTextTag(textelem);
-			 retXml=Xml.parse(Std.format('<${tag.tagName}>${textelem.textChars}</${tag.tagName}>'));
+			 retXml=Xml.parse(Std.format('<${tag.tagName} class="${tag.name}">${textelem.textChars}</${tag.tagName}>'));
 			var style=CSS.cssFromTextObject(textelem);
+			textrules.add({name:tag.name,rules:style});
 			//trace("style="+"'"+style+"'");
 			//xml.firstElement().set("style","font-family:Frutiger LT 57 Condensed;font-style:italic;color:#f0f;line-height: 121%;padding-bottom:2px;padding-top:1px");
 			//xml.firstElement().set("style","line-height: 121%;font-family:Frutiger LT 57 Condensed;font-style:italic;color:#f0f;padding-bottom:2px;padding-top:1px");
-			retXml.firstElement().set("style",style);
+			//retXml.firstElement().set("style",style);
 			
 		}
 		return retXml;
@@ -620,7 +628,10 @@ function toHtml(tree:TreeNode<HotSpot>):String
 	xml.set("class",tree.val.name);
 	var outXml=htmlrecurse(tree,xml);
 	trace(outXml.toString());
+	var externCss= new TextCSSView().execute({textes:textrules});
+	trace("externCss="+externCss);
 	dom.pngText.HTML=outXml.toString();
+	dom.pngText.CSS=externCss;
 	trace("after dom.pngText");
 	//dom.clipCopyJsToExecute(outXml.toString());
 	return "pol";
@@ -638,8 +649,14 @@ function toHtml(tree:TreeNode<HotSpot>):String
 }
 
 
-
-
+@:template(
+"@for ( css in textes){
+	.@css.name{
+		@css.rules
+	}
+}
+")
+class TextCSSView extends erazor.macro.Template<{textes:List<CSSTextElement>}>{}
 
 @:template("
 	<div class='page'>
